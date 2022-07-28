@@ -100,7 +100,7 @@ class F:
 ```
 
 [^7]: Specifically, `dir(foo)` is equivalent to `foo.__dir__`, which *very conveniently* dodges that `.`.
-[^8]: This order is alphabetical, but could be adjusted slightly as new methods get added with each release.
+[^8]: This order is alphabetical, but could be adjusted slightly as new methods get added with each release. Custom classes also come with only a handful of default methods to skip over.
 [^9]: @iPhoenix devised a pathological example where one invisibly messes with the built-ins to ruin this plan, but such an example could also be used to break `__add__` or even `getattr` altogether, rendering Python itself rather useless! Thus, this project also implicitly assumes that you're not doing anything to mess with Python internals, cause otherwise all bets are off.
 
 Recall that this trick gives us the *names* of the methods, not the methods themselves. Once we `getattr` our way into a class, though, we can store the method references as well in `globals()`, perhaps with single-letter names to make `chr` more friendly. Letting
