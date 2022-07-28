@@ -9,13 +9,14 @@ We also don't want our code to be all inside a string literal itself and use `ex
 1. [It's already been done.](https://codegolf.stackexchange.com/questions/110648/fewest-distinct-characters-for-turing-completeness)
 3. We want our code to be writable in your favorite IDE; wrapping it all in a string ditches any attempts at highlighting or lexical analysis.
 
-Thus, this project considers all *single* punctuation marks that are syntactically valid *outside* of string literals and *without* the need for `exec` or any of its cousins. As of release 3.10[^2], they are
+Thus, this project considers all *single* punctuation marks that are syntactically valid *outside* of string literals and *without* the need for `exec` or any of its cousins. As of release 3.10[^2][^3], they are
 
 `! " # % & ' () * + , - . / : ; < = > @ [] \ ^ {} | ~`
 
 Compositions of two or three of the above symbols, like `+=` or `...`, are just that, compositions, and are not taken to be distinct marks. However, we will have to ensure that all valid compositions are also unnecessary.
 
 [^2]: If [PEP-645](https://peps.python.org/pep-0645/) is accepted, which it rightly should, then `?` would enter the mix.
+[^3]: `_` is not a punctuation mark, but rather an identifier (and thus more or less a letter).
 
 So the question is: how many of the above 28 punctuation marks are *necessary* to write any and all Python code?
 
@@ -29,9 +30,9 @@ Every operator in Python is converted into a certain *magic method call* when in
 * `x % y` becomes `x.__mod__(y)`
 * `x += y` becomes `x.__iadd__(y)`
 
-and so on[^3]. You can find a list of all of them and their correspondences [here](https://docs.python.org/3/reference/datamodel.html).
+and so on[^4]. You can find a list of all of them and their correspondences [here](https://docs.python.org/3/reference/datamodel.html).
 
-[^3]: Sometimes these default to the *right* operand, becoming `y.__rmod__(x)`, but this is hardly relevant to our purposes.
+[^4]: Sometimes these default to the *right* operand, becoming `y.__rmod__(x)`, but this is hardly relevant to our purposes.
 
 But it should be evident that this fact lets us ditch every operator right from the get-go, since they get effectively removed anyway.
 
@@ -40,10 +41,10 @@ In removing every operator, we've made it almost abundantly necessary to have a 
 * `x.y` becomes `getattr(x, "y")`
 * `x.y = z` becomes `setattr(x, "y", z)`
 
-So not only is `.` out of the picture, `=` appears to be as well; we just need a way to set a simple local variable, one that isn't an attribute. Luckily, local variables are actually stored in a giant dictionary, `locals()`, that we can modify using `__setitem__`[^4]. That is, we have
+So not only is `.` out of the picture, `=` appears to be as well; we just need a way to set a simple local variable, one that isn't an attribute. Luckily, local variables are actually stored in a giant dictionary, `locals()`[^5], that we can modify using `__setitem__`. That is, we have
 * `x = y` becomes `locals().__setitem__("x", y)` becomes `getattr(locals(), "__setitem__")("x", y)`
 
-[^4]: Or sometimes `globals()`.
+[^5]: Or sometimes `globals()`.
 
 What's most interesting about the above is that there is a sense in which `x = y` *literally means* the expanded form on the right. Overiding `__setitem__` for the built-in `dict` class would apply, as would messing about with `getattr` (both of which are highly frowned upon outside shenanigans like this).
 
@@ -77,9 +78,9 @@ and thus
 ```
 
 ### You Knew `chr` Was Coming
-Alright, we've (almost completely) taken care of every mark on our list except `"`. Luckily, we can turn to the `chr` function to save the day: this little bugger takes in an ASCII code as an integer and returns the corresponding character. Thus, we can build up any string we like using only `()`, as `chr` is a single-argument function[^5].
+Alright, we've (almost completely) taken care of every mark on our list except `"`. Luckily, we can turn to the `chr` function to save the day: this little bugger takes in an ASCII code as an integer and returns the corresponding character. Thus, we can build up any string we like using only `()`, as `chr` is a single-argument function[^6].
 
-[^5]: One word about currying and I'm privating this repo.
+[^6]: One word about currying and I'm privating this repo.
 
 ```python
 getattr(x, "y") == getattr(*tuple(chr(121) if i else x for i in range(2)))
@@ -96,6 +97,7 @@ We will now systematically go through each of our 24 excess marks to reason why 
 ### `"`
 * **String literals** can be built using `chr`.
 * **Docstrings** are never necessary to run code, and are entirely ignored by the interpreter.
+* **f-strings** can always be implemented directly.
 
 ### `#`
 * **Comments** are never necessary to run code, and are entirely ignored by the interpreter.
@@ -205,3 +207,6 @@ Thus, I do claim that four is the best we can do. Anyone clever enough to prove 
 I'm glad you asked. At the moment there are plans for a transpiler which can walk a given Python AST and burn away those blasphemous punctuation marks, but no implementation is yet available. Some parts are pretty easy, such as recognizing instances where we can use one of our primary tricks. Other snippets are much trickier if the user isn't kind, requiring more complex restructuring of the AST before compiling back down to valid code.
 
 It's almost certainly doable in its entirety though, and if enough people pester me about it it'll get written. But for now, you can use this spec to write such code yourself, and make the world a slightly more confusing place.
+
+## Some Final Notes
+This challenge came to me in an afternoon, partly inspired by [pyfuck](https://github.com/wanqizhu/pyfuck). There's no good reason to ever write code this way, but it's kinda funny. If you have anything to add to the discussion, feel free to do it here.
