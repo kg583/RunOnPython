@@ -62,25 +62,27 @@ We can now employ the ternary operator to replace the comma in the following way
 
 Note the subtlety of this trick: we have to use the truthiness of `i = 1` to distinguish `x` and `y` in the tuple construction *without relying on any other operators*, as otherwise we'd be right back to needing a comma in the function call!
 
-Next, we construct longer tuples. We'll simply use the `__add__` method for tuples along with the tricks we already know:
+Next, we construct longer tuples. We'll simply use the `__add__` method for tuples along with the tricks we already know[^6]:
 ```python
-(x, y, z) === getattr(tuple(y if i else x for i in range(2)), "__add__")(tuple(z for _ in range(1)))
+(x, y, z) === getattr(*(y if i else x for i in range(2)), "__add__")(tuple(z for _ in range(1)))
 ```
 We can extend this indefinitely, and also make it a bit less messy by using local variables (i.e. `locals()` members) along the way.
 
+[^6]: We can drop `tuple` from unpacking statements, since generators can be unpacked as well, saving us a few letters.
+
 The coup-de-grace is then Python's wonderful fellow `*`, the unpacking operator. Luckily, almost every operator is binary, so we don't need to do many more shenanigans to get all the boilerplate arguments we need into a tuple.
 ```python
-getattr(x, "y") == getattr(*tuple("y" if i else x for i in range(2)))
+getattr(x, "y") == getattr(*("y" if i else x for i in range(2)))
 ```
 and thus
 ```python
-(x, y, z) === getattr(*tuple("__add__" if i else tuple(y if i else x for i in range(2)) for i in range(2)))(tuple(z for _ in range(1)))
+(x, y, z) === getattr(*("__add__" if i else tuple(y if i else x for i in range(2)) for i in range(2)))(tuple(z for _ in range(1)))
 ```
 
 ### You Knew `chr` Was Coming
-Alright, we've (almost completely) taken care of every mark on our list except `"`. Luckily, we can turn to the `chr` function to save the day: this little bugger takes in an ASCII code as an integer and returns the corresponding character. Thus, we can build up any string we like using only `()`, as `chr` is a single-argument function[^6].
+Alright, we've (almost completely) taken care of every mark on our list except `"`. Luckily, we can turn to the `chr` function to save the day: this little bugger takes in an ASCII code as an integer and returns the corresponding character. Thus, we can build up any string we like using only `()`, as `chr` is a single-argument function[^7].
 
-[^6]: One word about currying and I'm privating this repo.
+[^7]: One word about currying and I'm privating this repo.
 
 ```python
 getattr(x, "y") == getattr(*tuple(chr(121) if i else x for i in range(2)))
@@ -88,20 +90,23 @@ getattr(x, "y") == getattr(*tuple(chr(121) if i else x for i in range(2)))
 
 As with tuples, any length of string is possible in principle, but we need to need to be crafty: recall that in order to build longer tuples, we needed the `__add__` method. But in order to access it, we used `getattr(tuple, "__add__")`, which already has a string in it!
 
-The key is the wonderful `dir` function, which returns a list of the *names* every attribute of an object[^7]. By turning this list into an iterator, we can `next` our way to *any* element, and then use that name as the argument to `getattr`! We might need *many* `next` calls, but they are all well within the rules. To keep from relying on the method order[^8] of the built-ins[^9], we can define a custom class:
+The key is the wonderful `dir` function, which returns a list of the *names* every attribute of an object[^8]. By turning this list into an iterator, we can `next` our way to *any* element, and then use that name as the argument to `getattr`! We might need *many* `next` calls, but they are all well within the rules. To keep from relying on the method order[^9] of the built-ins[^10], we can define a custom class:
 
 ```python
 class F:
   def __add__():
+    pass
+    
+  def __getitem__():
     pass
   
   def __setitem__():
     pass
 ```
 
-[^7]: Specifically, `dir(foo)` is equivalent to `foo.__dir__`, which *very conveniently* dodges that `.`.
-[^8]: This order is alphabetical, but could be adjusted slightly as new methods get added with each release.
-[^9]: @iPhoenix devised a pathological example where one invisibly messes with the built-ins to ruin this plan, but such an example could also be used to break `__add__` or even `getattr` altogether, rendering Python itself rather useless! Thus, this project also implicitly assumes that you're not doing anything to mess with Python internals, cause otherwise all bets are off.
+[^8]: Specifically, `dir(foo)` is equivalent to `foo.__dir__`, which *very conveniently* dodges that `.`.
+[^9]: This order is alphabetical, but could be adjusted slightly as new methods get added with each release.
+[^10]: @iPhoenix devised a pathological example where one invisibly messes with the built-ins to ruin this plan, but such an example could also be used to break `__add__` or even `getattr` altogether, rendering Python itself rather useless! Thus, this project also implicitly assumes that you're not doing anything to mess with Python internals, cause otherwise all bets are off.
 
 Such a class has the added benefit of containing relatively few default methods that get in the way, which you can see by running `dir` on an empty class:
 
@@ -112,31 +117,95 @@ class X:
 dir(X) == ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__']
 ```
 
-We'll also need a way to call `next` an arbitrary number of times *without* being able to store the iterator somewhere directly, since we don't have `__setitem__` yet; luckily, a function is capable of assigning a variable without using `=`, which combined with Python's [pass-by-assignment](https://stackoverflow.com/questions/50534394/what-does-it-mean-by-passed-by-assignment) lets us advance our iterator. We will, however, need to fix the number of `next` calls *within the function body*. This is because Python won't let you unpack *within* a comprehension (see [PEP-448](https://peps.python.org/pep-0448/#variations)), and thus we cannot use the ternary tuple trick more than once when calling functions (and again, we don't have `__setitem__` yet).
+So, once we can nab `__setitem__` and its friends all at once, we have it at our disposal to build arbitrary strings.
+
+### None of This Actually Works
+
+Now, I must be honest with you: the tricks that we've seen so far are great, but we're still quite far from getting something functional. Trying to employ most of them directly fails for two main reasons: nested unpacking and the true meaning of `locals()`.
+
+For reasons that are [purely aesthetic](https://peps.python.org/pep-0448/#variations), Python won't let you unpack within a comprehension. Thus, we can only use our tuple trick once or twice before needing to store the value away; in particular, we can never call a multi-argument function within another multi-argument function call, which really wrecks our ability to use `getattr` well.
+
+Our problems are furthermore compounded by the fact that `locals()` is actually unusable with our new tricks. Consider the following, seemingly identical snippets:
 
 ```python
-def advance_4(iterator):
-  for _ in range(4):
+locals().__setitem__("S", "__setitem__")
+getattr(*tuple("__setitem__" if i else locals() for i in range(2)))("S", "__setitem__")
+```
+
+The first of those lines does exactly what'd you expect: saves `'__setitem__'` to `S` so we can use it later. The second, however, doesn't, because of the following devilish detail: comprehensions define new variable scopes. Once inside a comprehension, `locals()` refers not to the enclosing scope you came from, but the scope of the comprehension itself! Thus, setting the "local" value of `S` is useless, since it does not live outside the comprehension.
+
+Luckily, there's an easy but inelegant fix: use `globals()` instead. Namespace purists may rage, but it's the only option we've got. And now that we've got `globals()`, we can store away values in-between unpackings to keep Guido happy.
+
+### Putting It All Together
+
+So, let's build our way to a working Run-on Python implementation. We've got no classes, long strings, or anything else at our disposal, and we'll also refrain from importing anything at the moment.
+
+We're first gonna want some helper functions; in particular, we need a function that can call `next` an arbitrary number of times *without* being able to store the iterator somewhere directly (since we don't have `__setitem__` yet). We can accomplish this by leveraging the fact that functions bind their arguments to their parameter names:
+
+```python  
+def advance_10(iterator):
+  for _ in range(10):
+    next(iterator)
+  
+  return iterator
+  
+def advance_24(iterator):
+  for _ in range(24):
     next(iterator)
   
   return iterator
 ```
 
-For our class `F`, the shortest call chains to nab our methods are
+Note that our function can only take one argument due to the unpacking restrictions, so the number of advancements will have to be fixed within the function body. Luckily, for our class `F` from earlier, 10 and 24 are just what we need:
 
 ```python
 '__add__' == next(iter(dir(F)))
-'__setitem__' == next(advance_4(iter(reversed(dir(F)))))
+'__getitem__' == next(advance_10(iter(dir(F))))
+'__setitem__' == next(advance_24(iter(dir(F))))
 ```
 
-Note that this trick gives us the *names* of the methods, not the methods themselves. Once we `getattr` our way into a class, though, we can store the method references as well in `globals()`, perhaps with single-letter names to make `chr` more friendly. Letting
+A function that simplifies `__getitem__` calls would also be nice (recall that we have to always fetch from `globals()`):
 
 ```python
-O = range(1)
-T = range(2)
+def get_value(name):
+  return getattr(*(next(advance_10(iter(dir(F)))) if i else globals() for i in range(2)))(name)
 ```
 
-is also a fairly good idea as we've seen.
+We'll do the same for `__setitem__` so we can offload unpacking to the function itself:
+
+```python
+def set_value(name_and_value):
+  return getattr(*(next(advance_24(iter(dir(F)))) if i else globals() for i in range(2)))(*name_and_value)
+```
+
+Finally, we'll make builders for tuples and strings; these are the only two we'll need, since strings are ["special"](https://stackoverflow.com/questions/3525359/python-sum-why-not-strings) and tuples can be turned into anything else:
+
+```python
+def build_tuple(left_and_right):
+  return getattr(*(next(iter(dir(F))) if i else tuple for i in range(2)))(*left_and_right)
+  
+def build_string(left_and_right):
+  return getattr(*(next(iter(dir(F))) if i else str for i in range(2)))(*left_and_right)
+```
+
+Certain ranges would be pretty convenient with single-letter names, so let's make those:
+
+```python
+set_value(tuple(range(2) if i else chr(84) for i in range(2)))
+set_value(tuple(range(1) if i else chr(79) for i in T))
+```
+
+And finally, let's do the same for `__setitem__` and company[^11]:
+
+```python
+set_value(tuple(next(iter(dir(F))) if i else chr(65) for i in T))
+set_value(tuple(next(advance_10(iter(dir(F)))) if i else chr(71) for i in T))
+set_value(tuple(next(advance_24(iter(dir(F)))) if i else chr(83) for i in T))
+```
+
+[^11]: You may, if so inclined, replace *all* previous instances of these expressions within function bodies with their new names, since the functions have yet to be run.
+
+Presto! We've got ourselves an implementation of Run-on Python that isn't completely horrendous to use. Only one last step to round off our endeavor.
 
 ## How To Make Like a Poet and Rid Yourself of Punctuation
 We will now systematically go through each of our 24 excess marks to reason why they are not necessary. Buckle up, cause this could take a while.
