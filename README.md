@@ -100,10 +100,36 @@ class F:
 ```
 
 [^7]: Specifically, `dir(foo)` is equivalent to `foo.__dir__`, which *very conveniently* dodges that `.`.
-[^8]: This order is alphabetical, but could be adjusted slightly as new methods get added with each release. Custom classes also come with only a handful of default methods to skip over.
+[^8]: This order is alphabetical, but could be adjusted slightly as new methods get added with each release.
 [^9]: @iPhoenix devised a pathological example where one invisibly messes with the built-ins to ruin this plan, but such an example could also be used to break `__add__` or even `getattr` altogether, rendering Python itself rather useless! Thus, this project also implicitly assumes that you're not doing anything to mess with Python internals, cause otherwise all bets are off.
 
-Recall that this trick gives us the *names* of the methods, not the methods themselves. Once we `getattr` our way into a class, though, we can store the method references as well in `globals()`, perhaps with single-letter names to make `chr` more friendly. Letting
+Such a class has the added benefit of containing relatively few default methods that get in the way, which you can see by running `dir` on an empty class:
+
+```python
+class X:
+  pass
+  
+dir(X) == ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__']
+```
+
+We'll also need a way to call `next` an arbitrary number of times *without* being able to store the iterator somewhere directly, since we don't have `__setitem__` yet; luckily, a function is capable of assigning a variable without using `=`, which combined with Python's [pass-by-assignment](https://stackoverflow.com/questions/50534394/what-does-it-mean-by-passed-by-assignment) lets us advance our iterator. We will, however, need to fix the number of `next` calls *within the function body*. This is because Python won't let you unpack *within* a comprehension (see [PEP-448](https://peps.python.org/pep-0448/#variations)), and thus we cannot use the ternary tuple trick more than once when calling functions (and again, we don't have `__setitem__` yet).
+
+```python
+def advance_4(iterator):
+  for _ in range(4):
+    next(iterator)
+  
+  return iterator
+```
+
+For our class `F`, the shortest call chains to nab our methods are
+
+```python
+'__add__' == next(iter(dir(F)))
+'__setitem__' == next(advance_4(iter(reversed(dir(F)))))
+```
+
+Note that this trick gives us the *names* of the methods, not the methods themselves. Once we `getattr` our way into a class, though, we can store the method references as well in `globals()`, perhaps with single-letter names to make `chr` more friendly. Letting
 
 ```python
 O = range(1)
@@ -146,7 +172,7 @@ We will now systematically go through each of our 24 excess marks to reason why 
 * Multiple **function arguments** can be replaced by a single, iterable argument.
 * Raw **iterables** can be constructed using the ternary tuple trick.
 * Multiple **globals** or **nonlocals** on a single line can simply be split into multiple lines.
-* Multiple **imports** on a single line can simply be split into multiple multiple lines. [PEP 8](https://peps.python.org/pep-0008/) even says you *should*.
+* Multiple **imports** on a single line can simply be split into multiple multiple lines. [PEP-8](https://peps.python.org/pep-0008/) even says you *should*.
 * **Unpacking** can always be done across multiple lines or statements.
 * **Multidimensional slices** are passed as tuples of `slice` objects into `__getitem__`, which can be resolved using known tricks.
 * `with` statements with multiple **targets** are [semantically equivalent](https://docs.python.org/3/reference/compound_stmts.html#the-with-statement) to nestings of singular targets.
@@ -234,8 +260,6 @@ Thus, I do claim that four is the best we can do. Anyone clever enough to prove 
 
 ## How Can I Write Run-on Python?
 I'm glad you asked. At the moment there are plans for a transpiler which can walk a given Python AST and burn away those blasphemous punctuation marks, but no implementation is yet available. Some parts are pretty easy, such as recognizing instances where we can use one of our primary tricks. Other snippets are much trickier if the user isn't kind, requiring more complex restructuring of the AST before compiling back down to valid code.
-
-There are also some situations where Python itself gets in the way, particularly when deeply nesting calls. For reasons that are probably technical but still extremely frustrating, Python will *not* permit unpacking within comprehension, requiring you to push intermediate values onto `locals()` more often. It's a pain, but not a true limitation.
 
 The transpiler is still almost certainly doable in its entirety though, and if enough people pester me about it it'll get written. But for now, you can use this spec to write such code yourself, and make the world a slightly more confusing place.
 
