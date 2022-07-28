@@ -88,18 +88,29 @@ getattr(x, "y") == getattr(*tuple(chr(121) if i else x for i in range(2)))
 
 As with tuples, any length of string is possible in principle, but we need to need to be crafty: recall that in order to build longer tuples, we needed the `__add__` method. But in order to access it, we used `getattr(tuple, "__add__")`, which already has a string in it!
 
-The key is the wonderful `dir` function, which returns a list of the *names* every attribute of an object[^7]. By turning this list into an iterator, we can `next` our way to *any* element, and then use that name as the argument to `getattr`! We might need *many* `next` calls, but they are all well within the rules.
-
-[^7]: Specifically, `dir(foo)` returns `foo.__dir__`, which *very conveniently* dodges that `.`.
-
-Armed with `__add__` and `__setitem__` in particular, we can save ourselves some trouble by hooking these functions to single-letter names in the `globals()` space, and thus be able to access them with `chr` from then on. Letting
+The key is the wonderful `dir` function, which returns a list of the *names* every attribute of an object[^7]. By turning this list into an iterator, we can `next` our way to *any* element, and then use that name as the argument to `getattr`! We might need *many* `next` calls, but they are all well within the rules. To keep from relying on the method order[^8] of the built-ins[^9], we can define a custom class:
 
 ```python
-R1 = range(1)
-R2 = range(2)
+class F:
+  def __add__():
+    pass
+  
+  def __setitem__():
+    pass
 ```
 
-is also a fairly good idea.
+[^7]: Specifically, `dir(foo)` is equivalent to `foo.__dir__`, which *very conveniently* dodges that `.`.
+[^8]: This order is alphabetical, but could be adjusted slightly as new methods get added with each release.
+[^9]: @iPhoenix devised a pathological example where one invisibly messes with the built-ins to ruin this plan, but such an example could also be used to break `__add__` or even `getattr` altogether, rendering Python itself rather useless! Thus, this project also implicitly assumes that you're not doing anything to mess with Python internals, cause otherwise all bets are off.
+
+Recall that this trick gives us the *names* of the methods, not the methods themselves. Once we `getattr` our way into a class, though, we can store the method references as well in `globals()`, perhaps with single-letter names to make `chr` more friendly. Letting
+
+```python
+O = range(1)
+T = range(2)
+```
+
+is also a fairly good idea as we've seen.
 
 ## How To Make Like a Poet and Rid Yourself of Punctuation
 We will now systematically go through each of our 24 excess marks to reason why they are not necessary. Buckle up, cause this could take a while.
@@ -211,11 +222,13 @@ With only four punctuation marks remaining, it seems unlikely we can get rid of 
 * `()` are the main way to do function calls, and are also the only grouping symbol left. Seems like a no-brainer that those have to stay.
   * As pointed out by @commandblockguy, decorators can also call things, as can the `del` operator, but then we run into the problem of defining those things in the first place.
   * It is also possible to dodge parentheses entirely [in some situations](https://polygl0ts.ch/writeups/2021/b01lers/pyjail_noparens/README.html), again using decorators, but we need to take on even more symbols to make it happen.
-  * Further discussion has indicated that parentheses are the most likely among the remaining symbols that we could be rid of, perhaps through some exception shenanigans or just lots of decorators. The former would remove two symbols, and the latter just one, but both would be an improvement.
+  * Further discussion[^10] has indicated that parentheses are the most likely among the remaining symbols that we could be rid of, perhaps through some exception shenanigans or just lots of decorators. The former would remove two symbols, and the latter just one, but both would be an improvement.
 * `:` is required for just about every control flow construct. Also pretty necessary.
   * *If* you're okay with using a Turing-complete subset of Python, then I think you can dodge `:` by living entirely inside tuple comprehensions. However, this subset doesn't give you functions or classes, and feels definitely out of the spirit of this whole shebang.
 * `*` is very powerful, enabling us to drop `,` among other things. Unpacking is just too good to pass up.
   * Of course, keeping `,` over `*` is *much* cleaner, but dodging `,` is just too much fun.
+
+[^10]: Much of this discussion has been spurred by tricks found [here](https://book.hacktricks.xyz/generic-methodologies-and-resources/python/bypass-python-sandboxes#dissecting-python-objects).
 
 Thus, I do claim that four is the best we can do. Anyone clever enough to prove otherwise is more than welcome to do so.
 
