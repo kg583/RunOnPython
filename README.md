@@ -88,7 +88,9 @@ getattr(x, "y") == getattr(*tuple(chr(121) if i else x for i in range(2)))
 
 As with tuples, any length of string is possible in principle, but we need to need to be crafty: recall that in order to build longer tuples, we needed the `__add__` method. But in order to access it, we used `getattr(tuple, "__add__")`, which already has a string in it!
 
-The key is the wonderful `dir` function, which returns a list of the *names* every attribute of an object. By turning this list into an iterator, we can `next` our way to *any* element, and then use that name as the arguments to `getattr`! Now, we might need *many* `next` calls, but they are all well within the rules.
+The key is the wonderful `dir` function, which returns a list of the *names* every attribute of an object[^7]. By turning this list into an iterator, we can `next` our way to *any* element, and then use that name as the argument to `getattr`! We might need *many* `next` calls, but they are all well within the rules.
+
+[^7]: Specifically, `dir(foo)` returns `foo.__dir__`, which *very conveniently* dodges that `.`.
 
 Armed with `__add__` and `__setitem__` in particular, we can save ourselves some trouble by hooking these functions to single-letter names in the `globals()` space, and thus be able to access them with `chr` from then on. Letting
 
@@ -214,8 +216,6 @@ With only four punctuation marks remaining, it seems unlikely we can get rid of 
   * *If* you're okay with using a Turing-complete subset of Python, then I think you can dodge `:` by living entirely inside tuple comprehensions. However, this subset doesn't give you functions or classes, and feels definitely out of the spirit of this whole shebang.
 * `*` is very powerful, enabling us to drop `,` among other things. Unpacking is just too good to pass up.
   * Of course, keeping `,` over `*` is *much* cleaner, but dodging `,` is just too much fun.
-
-[^7]: This is technically incorrect 
 
 Thus, I do claim that four is the best we can do. Anyone clever enough to prove otherwise is more than welcome to do so.
 
