@@ -86,7 +86,9 @@ Alright, we've (almost completely) taken care of every mark on our list except `
 getattr(x, "y") == getattr(*tuple(chr(121) if i else x for i in range(2)))
 ```
 
-As with tuples, any length of string is possible in principle, but becomes horribly messy once it needs to be written out. The use of `chr` also allows us to get disallowed punctuation inside strings, even if we don't necessarily care that they are there to begin with.
+As with tuples, any length of string is possible in principle, but we need to need to be crafty: recall that in order to build longer tuples, we needed the `__add__` method. But in order to access it, we used `getattr(tuple, "__add__")`, which already has a string in it!
+
+The key is the wonderful `dir` function, which returns a list of every attribute of an object. And oh so convenientely, `__add__` is alphabetically first among all methods. Thus, we may use `next(iter(dir(str)))` to snatch it, and we are basically there.
 
 ## How To Make Like a Poet and Rid Yourself of Punctuation
 We will now systematically go through each of our 24 excess marks to reason why they are not necessary. Buckle up, cause this could take a while.
@@ -211,7 +213,9 @@ Thus, I do claim that four is the best we can do. Anyone clever enough to prove 
 ## How Can I Write Run-on Python?
 I'm glad you asked. At the moment there are plans for a transpiler which can walk a given Python AST and burn away those blasphemous punctuation marks, but no implementation is yet available. Some parts are pretty easy, such as recognizing instances where we can use one of our primary tricks. Other snippets are much trickier if the user isn't kind, requiring more complex restructuring of the AST before compiling back down to valid code.
 
-It's almost certainly doable in its entirety though, and if enough people pester me about it it'll get written. But for now, you can use this spec to write such code yourself, and make the world a slightly more confusing place.
+There are also some situations where Python itself gets in the way, particularly when deeply nesting calls. For reasons that are probably technical but still extremely frustrating, Python will *not* permit unpacking within comprehension, requiring you to push intermediate values onto `locals()` more often. It's a pain, but not a true limitation.
+
+The transpiler is still almost certainly doable in its entirety though, and if enough people pester me about it it'll get written. But for now, you can use this spec to write such code yourself, and make the world a slightly more confusing place.
 
 ## Some Final Notes
 This challenge came to me in an afternoon, partly inspired by [pyfuck](https://github.com/wanqizhu/pyfuck). There's no good reason to ever write code this way, but it's kinda funny. Shoutout to @commandblockguy, @iPhoenix, and @LogicalJoe for comments and discussion on this monstrosity as it developed.
