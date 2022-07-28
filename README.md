@@ -97,7 +97,7 @@ We will now systematically go through each of our 24 excess marks to reason why 
 ### `"`
 * **String literals** can be built using `chr`.
 * **Docstrings** are never necessary to run code, and are entirely ignored by the interpreter.
-* **f-strings** can always be implemented directly.
+* **f-strings** can always be implemented directly; `.format` can also take a bit of the load.
 
 ### `#`
 * **Comments** are never necessary to run code, and are entirely ignored by the interpreter.
@@ -209,4 +209,6 @@ I'm glad you asked. At the moment there are plans for a transpiler which can wal
 It's almost certainly doable in its entirety though, and if enough people pester me about it it'll get written. But for now, you can use this spec to write such code yourself, and make the world a slightly more confusing place.
 
 ## Some Final Notes
-This challenge came to me in an afternoon, partly inspired by [pyfuck](https://github.com/wanqizhu/pyfuck). There's no good reason to ever write code this way, but it's kinda funny. If you have anything to add to the discussion, feel free to do it here.
+This challenge came to me in an afternoon, partly inspired by [pyfuck](https://github.com/wanqizhu/pyfuck). There's no good reason to ever write code this way, but it's kinda funny. Shoutout to @commandblockguy, @iPhoenix, and @LogicalJoe for comments and discussion on this monstrosity as it developed.
+
+If you have anything to add to the discussion or (currently nonexistant) codebase, feel free to do it here.
