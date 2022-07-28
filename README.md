@@ -195,11 +195,13 @@ We will now systematically go through each of our 24 excess marks to reason why 
 
 ## Can We Do Any Better?
 With only four punctuation marks remaining, it seems unlikely we can get rid of any more. Indeed, I posit that this is true:
-* `()` are the only way to do function calls. Seems like a no-brainer that those have to stay.
+* `()` are the only way to do function calls[^7], and are also the only grouping symbol we have left. Seems like a no-brainer that those have to stay.
 * `:` is required for just about every control flow construct. Also pretty necessary.
   * *If* you're okay with using a Turing-complete subset of Python, then I think you can dodge `:` by living entirely inside tuple comprehensions. However, this subset doesn't give you functions or classes, and feels definitely out of the spirit of this whole shebang.
 * `*` is very powerful, enabling us to drop `,` among other things. Unpacking is just too good to pass up.
   * Of course, keeping `,` over `*` is *much* cleaner, but dodging `,` is just too much fun.
+
+[^7]: This is technically incorrect as pointed out by @commandblockguy; decorators can also call things, as can the `del` operator, but then we run into the problem of defining those things in the first place.
 
 Thus, I do claim that four is the best we can do. Anyone clever enough to prove otherwise is more than welcome to do so.
 
