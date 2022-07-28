@@ -88,7 +88,16 @@ getattr(x, "y") == getattr(*tuple(chr(121) if i else x for i in range(2)))
 
 As with tuples, any length of string is possible in principle, but we need to need to be crafty: recall that in order to build longer tuples, we needed the `__add__` method. But in order to access it, we used `getattr(tuple, "__add__")`, which already has a string in it!
 
-The key is the wonderful `dir` function, which returns a list of every attribute of an object. And oh so convenientely, `__add__` is alphabetically first among all methods. Thus, we may use `next(iter(dir(str)))` to snatch it, and we are basically there.
+The key is the wonderful `dir` function, which returns a list of the *names* every attribute of an object. By turning this list into an iterator, we can `next` our way to *any* element, and then use that name as the arguments to `getattr`! Now, we might need *many* `next` calls, but they are all well within the rules.
+
+Armed with `__add__` and `__setitem__` in particular, we can save ourselves some trouble by hooking these functions to single-letter names in the `globals()` space, and thus be able to access them with `chr` from then on. Letting
+
+```python
+R1 = range(1)
+R2 = range(2)
+```
+
+is also a fairly good idea.
 
 ## How To Make Like a Poet and Rid Yourself of Punctuation
 We will now systematically go through each of our 24 excess marks to reason why they are not necessary. Buckle up, cause this could take a while.
