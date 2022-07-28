@@ -16,7 +16,7 @@ Thus, this project considers all *single* punctuation marks that are syntactical
 Compositions of two or three of the above symbols, like `+=` or `...`, are just that, compositions, and are not taken to be distinct marks. However, we will have to ensure that all valid compositions are also unnecessary.
 
 [^2]: If [PEP-645](https://peps.python.org/pep-0645/) is accepted, which it rightly should, then `?` would enter the mix.
-[^3]: `_` is not a punctuation mark, but rather an identifier (and thus more or less a letter).
+[^3]: `_` is not a punctuation mark, but rather an identifier (and thus more or less a letter). Though `string` thinks it *is* punctuation...
 
 So the question is: how many of the above 28 punctuation marks are *necessary* to write any and all Python code?
 
