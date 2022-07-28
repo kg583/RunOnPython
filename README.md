@@ -44,7 +44,7 @@ In removing every operator, we've made it almost abundantly necessary to have a 
 So not only is `.` out of the picture, `=` appears to be as well; we just need a way to set a simple local variable, one that isn't an attribute. Luckily, local variables are actually stored in a giant dictionary, `locals()`[^5], that we can modify using `__setitem__`. That is, we have
 * `x = y` becomes `locals().__setitem__("x", y)` becomes `getattr(locals(), "__setitem__")("x", y)`
 
-[^5]: Or sometimes `globals()`.
+[^5]: Or sometimes `globals()`, which will be important later.
 
 What's most interesting about the above is that there is a sense in which `x = y` *literally means* the expanded form on the right. Overiding `__setitem__` for the built-in `dict` class would apply, as would messing about with `getattr` (both of which are highly frowned upon outside shenanigans like this).
 
