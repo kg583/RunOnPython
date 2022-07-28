@@ -80,9 +80,7 @@ and thus
 ```
 
 ### You Knew `chr` Was Coming
-Alright, we've (almost completely) taken care of every mark on our list except `"`. Luckily, we can turn to the `chr` function to save the day: this little bugger takes in an ASCII code as an integer and returns the corresponding character. Thus, we can build up any string we like using only `()`, as `chr` is a single-argument function[^7].
-
-[^7]: One word about currying and I'm privating this repo.
+Alright, we've (almost completely) taken care of every mark on our list except `"`. Luckily, we can turn to the `chr` function to save the day: this little bugger takes in an ASCII code as an integer and returns the corresponding character. Thus, we can build up any string we like using only `()`, as `chr` is a single-argument function.
 
 ```python
 getattr(x, "y") == getattr(*tuple(chr(121) if i else x for i in range(2)))
@@ -90,7 +88,7 @@ getattr(x, "y") == getattr(*tuple(chr(121) if i else x for i in range(2)))
 
 As with tuples, any length of string is possible in principle, but we need to need to be crafty: recall that in order to build longer tuples, we needed the `__add__` method. But in order to access it, we used `getattr(tuple, "__add__")`, which already has a string in it!
 
-The key is the wonderful `dir` function, which returns a list of the *names* every attribute of an object[^8]. By turning this list into an iterator, we can `next` our way to *any* element, and then use that name as the argument to `getattr`! We might need *many* `next` calls, but they are all well within the rules. To keep from relying on the method order[^9] of the built-ins[^10], we can define a custom class:
+The key is the wonderful `dir` function, which returns a list of the *names* every attribute of an object[^7]. By turning this list into an iterator, we can `next` our way to *any* element, and then use that name as the argument to `getattr`! We might need *many* `next` calls, but they are all well within the rules. To keep from relying on the method order[^8] of the built-ins[^9], we can define a custom class:
 
 ```python
 class F:
@@ -104,9 +102,9 @@ class F:
     pass
 ```
 
-[^8]: Specifically, `dir(foo)` is equivalent to `foo.__dir__`, which *very conveniently* dodges that `.`.
-[^9]: This order is alphabetical, but could be adjusted slightly as new methods get added with each release.
-[^10]: @iPhoenix devised a pathological example where one invisibly messes with the built-ins to ruin this plan, but such an example could also be used to break `__add__` or even `getattr` altogether, rendering Python itself rather useless! Thus, this project also implicitly assumes that you're not doing anything to mess with Python internals, cause otherwise all bets are off.
+[^7]: Specifically, `dir(foo)` is equivalent to `foo.__dir__`, which *very conveniently* dodges that `.`.
+[^8]: This order is alphabetical, but could be adjusted slightly as new methods get added with each release.
+[^9]: @iPhoenix devised a pathological example where one invisibly messes with the built-ins to ruin this plan, but such an example could also be used to break `__add__` or even `getattr` altogether, rendering Python itself rather useless! Thus, this project also implicitly assumes that you're not doing anything to mess with Python internals, cause otherwise all bets are off.
 
 Such a class has the added benefit of containing relatively few default methods that get in the way, which you can see by running `dir` on an empty class:
 
@@ -140,70 +138,82 @@ Luckily, there's an easy but inelegant fix: use `globals()` instead. Namespace p
 
 So, let's build our way to a working Run-on Python implementation. We've got no classes, long strings, or anything else at our disposal, and we'll also refrain from importing anything at the moment.
 
-We're first gonna want some helper functions; in particular, we need a function that can call `next` an arbitrary number of times *without* being able to store the iterator somewhere directly (since we don't have `__setitem__` yet). We can accomplish this by leveraging the fact that functions bind their arguments to their parameter names:
+We're first gonna want some helper functions. The most crucial is the "twopler", a function with can curry two inputs to build a tuple using our ternary trick:
 
-```python  
-def advance_10(iterator):
-  for _ in range(10):
-    next(iterator)
-  
-  return iterator
-  
-def advance_24(iterator):
-  for _ in range(24):
-    next(iterator)
-  
-  return iterator
+```python
+def tup(first):
+  def inner(second):
+    return tuple(second if i else first for i in range(2))
+  return inner
 ```
 
-Note that our function can only take one argument due to the unpacking restrictions, so the number of advancements will have to be fixed within the function body. Luckily, for our class `F` from earlier, 10 and 24 are just what we need:
+Thus, we can avoid unpacking within a comprehension, since we won't even be using a comprehension to build our tuples!
+
+Next, we'll define a function that can call `next` an arbitrary number of times. Note that we need to do this *without* being able to store the iterator somewhere directly (since we don't have `__setitem__` yet), but luckily we can leverage the fact that functions bind their arguments to their parameter names:
+
+```python  
+def advance(num):
+  def inner(iterator):
+    for _ in range(num):
+      next(iterator)
+    return iterator
+  return inner
+```
+
+With it, we can nab our method names from the class `F` define earlier:
 
 ```python
 '__add__' == next(iter(dir(F)))
-'__getitem__' == next(advance_10(iter(dir(F))))
-'__setitem__' == next(advance_24(iter(dir(F))))
+'__getitem__' == next(advance(10)(iter(dir(F))))
+'__setitem__' == next(advance(24)(iter(dir(F))))
 ```
 
 A function that simplifies `__getitem__` calls would also be nice (recall that we have to always fetch from `globals()`):
 
 ```python
 def get_value(name):
-  return getattr(*(next(advance_10(iter(dir(F)))) if i else globals() for i in range(2)))(name)
+  return getattr(*tup(globals())(next(advance(10)(iter(dir(F))))))(name)
 ```
 
 We'll do the same for `__setitem__` so we can offload unpacking to the function itself:
 
 ```python
-def set_value(name_and_value):
-  return getattr(*(next(advance_24(iter(dir(F)))) if i else globals() for i in range(2)))(*name_and_value)
+def set_value(name):
+  def inner(value):
+    return getattr(*tup(globals())(next(advance(24)(iter(dir(F))))))(*tup(name)(value))
+  return inner
 ```
 
 Finally, we'll make builders for tuples and strings; these are the only two we'll need, since strings are ["special"](https://stackoverflow.com/questions/3525359/python-sum-why-not-strings) and tuples can be turned into anything else:
 
 ```python
-def build_tuple(left_and_right):
-  return getattr(*(next(iter(dir(F))) if i else tuple for i in range(2)))(*left_and_right)
+def build_tuple(left):
+  def inner(right):
+    return getattr(*tup(tuple)(next(iter(dir(F)))))(*tup(left)(right))
+  return inner
   
-def build_string(left_and_right):
-  return getattr(*(next(iter(dir(F))) if i else str for i in range(2)))(*left_and_right)
+def build_string(left):
+  def inner(right):
+    return getattr(*tup(str)(next(iter(dir(F)))))(*tup(left)(right))
+  return inner
 ```
 
 Certain ranges would be pretty convenient with single-letter names, so let's make those:
 
 ```python
-set_value(tuple(range(2) if i else chr(84) for i in range(2)))
-set_value(tuple(range(1) if i else chr(79) for i in T))
+set_value(chr(79))(range(1))
+set_value(chr(84))(range(2))
 ```
 
-And finally, let's do the same for `__setitem__` and company[^11]:
+And finally, let's do the same for `__setitem__` and company[^10]:
 
 ```python
-set_value(tuple(next(iter(dir(F))) if i else chr(65) for i in T))
-set_value(tuple(next(advance_10(iter(dir(F)))) if i else chr(71) for i in T))
-set_value(tuple(next(advance_24(iter(dir(F)))) if i else chr(83) for i in T))
+set_value(chr(65))(next(iter(dir(F))))
+set_value(chr(71))(next(advance(10)(iter(dir(F)))))
+set_value(chr(83))(next(advance(24)(iter(dir(F)))))
 ```
 
-[^11]: You may, if so inclined, replace *all* previous instances of these expressions within function bodies with their new names, since the functions have yet to be run.
+[^10]: You may, if so inclined, replace *all* previous instances of these expressions within function bodies with their new names, since the functions have yet to be run.
 
 Presto! We've got ourselves an implementation of Run-on Python that isn't completely horrendous to use. Only one last step to round off our endeavor.
 
@@ -238,7 +248,7 @@ We will now systematically go through each of our 24 excess marks to reason why 
 * `+=` is equivalent to `__iadd__`.
 
 ### `,`
-* Multiple **function arguments** can be replaced by a single, iterable argument.
+* Multiple **function arguments** can be replaced by a single, iterable argument, or by currying with inner functions.
 * Raw **iterables** can be constructed using the ternary tuple trick.
 * Multiple **globals** or **nonlocals** on a single line can simply be split into multiple lines.
 * Multiple **imports** on a single line can simply be split into multiple multiple lines. [PEP-8](https://peps.python.org/pep-0008/) even says you *should*.
@@ -317,13 +327,13 @@ With only four punctuation marks remaining, it seems unlikely we can get rid of 
 * `()` are the main way to do function calls, and are also the only grouping symbol left. Seems like a no-brainer that those have to stay.
   * As pointed out by @commandblockguy, decorators can also call things, as can the `del` operator, but then we run into the problem of defining those things in the first place.
   * It is also possible to dodge parentheses entirely [in some situations](https://polygl0ts.ch/writeups/2021/b01lers/pyjail_noparens/README.html), again using decorators, but we need to take on even more symbols to make it happen.
-  * Further discussion[^12] has indicated that parentheses are the most likely among the remaining symbols that we could be rid of, perhaps through some exception shenanigans or just lots of decorators. The former would remove two symbols, and the latter just one, but both would be an improvement.
+  * Further discussion[^11] has indicated that parentheses are the most likely among the remaining symbols that we could be rid of, perhaps through some exception shenanigans or just lots of decorators. The former would remove two symbols, and the latter just one, but both would be an improvement.
 * `:` is required for just about every control flow construct. Also pretty necessary.
   * *If* you're okay with using a Turing-complete subset of Python, then I think you can dodge `:` by living entirely inside tuple comprehensions. However, this subset doesn't give you functions or classes, and feels definitely out of the spirit of this whole shebang.
 * `*` is very powerful, enabling us to drop `,` among other things. Unpacking is just too good to pass up.
   * Of course, keeping `,` over `*` is *much* cleaner, but dodging `,` is just too much fun.
 
-[^12]: Much of this discussion has been spurred by tricks found [here](https://book.hacktricks.xyz/generic-methodologies-and-resources/python/bypass-python-sandboxes#dissecting-python-objects).
+[^11]: Much of this discussion has been spurred by tricks found [here](https://book.hacktricks.xyz/generic-methodologies-and-resources/python/bypass-python-sandboxes#dissecting-python-objects).
 
 Thus, I do claim that four is the best we can do. Anyone clever enough to prove otherwise is more than welcome to do so.
 
