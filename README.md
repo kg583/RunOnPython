@@ -160,7 +160,7 @@ def advance(num):
   return inner
 ```
 
-With it, we can nab our method names from the class `F` define earlier:
+With it, we can nab our method names from the class `F` defined earlier:
 
 ```python
 '__add__' == next(iter(dir(F)))
