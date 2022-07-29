@@ -198,22 +198,13 @@ def build_string(left):
   return inner
 ```
 
-Certain ranges would be pretty convenient with single-letter names, so let's make those:
-
-```python
-set_value(chr(79))(range(1))
-set_value(chr(84))(range(2))
-```
-
-And finally, let's do the same for `__setitem__` and company[^10]:
+And finally, let's put our method names into convenient, single-letter variables[^10]:
 
 ```python
 set_value(chr(65))(next(iter(dir(F))))
 set_value(chr(71))(next(advance(10)(iter(dir(F)))))
 set_value(chr(83))(next(advance(24)(iter(dir(F)))))
 ```
-
-[^10]: You may, if so inclined, replace *all* previous instances of these expressions within function bodies with their new names, since the functions have yet to be run.
 
 Presto! We've got ourselves an implementation of Run-on Python that isn't completely horrendous to use. Only one last step to round off our endeavor.
 
@@ -226,7 +217,7 @@ We will now systematically go through each of our 24 excess marks to reason why 
 ### `"`
 * **String literals** can be built using `chr`.
 * **Docstrings** are never necessary to run code, and are entirely ignored by the interpreter.
-* **f-strings** can always be implemented directly; `.format` can also take a bit of the load.
+* **f-strings** can always be implemented directly; `str.format` can also take a bit of the load.
 
 ### `#`
 * **Comments** are never necessary to run code, and are entirely ignored by the interpreter.
@@ -263,7 +254,7 @@ We will now systematically go through each of our 24 excess marks to reason why 
 
 ### `.`
 * **Attributes** can be accessed via `getattr` and `setattr`.
-* **Decimals** can be written by `__div__`-ing integers by powers of 10, which will have the same viable precision as standard specification of floats.
+* **Decimals** can be written by `__div__`-ing integers by powers of 10, which will have the same viable precision as standard float literals.
 * **Relative imports** can be translated into calls to `__import__`.
 * **Ellipses** are equivalent to the identifier `Ellipsis`.
 
@@ -327,13 +318,13 @@ With only four punctuation marks remaining, it seems unlikely we can get rid of 
 * `()` are the main way to do function calls, and are also the only grouping symbol left. Seems like a no-brainer that those have to stay.
   * As pointed out by @commandblockguy, decorators can also call things, as can the `del` operator, but then we run into the problem of defining those things in the first place.
   * It is also possible to dodge parentheses entirely [in some situations](https://polygl0ts.ch/writeups/2021/b01lers/pyjail_noparens/README.html), again using decorators, but we need to take on even more symbols to make it happen.
-  * Further discussion[^11] has indicated that parentheses are the most likely among the remaining symbols that we could be rid of, perhaps through some exception shenanigans or just lots of decorators. The former would remove two symbols, and the latter just one, but both would be an improvement.
+  * Further discussion[^10] has indicated that parentheses are the most likely among the remaining symbols that we could be rid of, perhaps through some exception shenanigans or just lots of decorators. The former would remove two symbols, and the latter just one, but both would be an improvement.
 * `:` is required for just about every control flow construct. Also pretty necessary.
   * *If* you're okay with using a Turing-complete subset of Python, then I think you can dodge `:` by living entirely inside tuple comprehensions. However, this subset doesn't give you functions or classes, and feels definitely out of the spirit of this whole shebang.
 * `*` is very powerful, enabling us to drop `,` among other things. Unpacking is just too good to pass up.
   * Of course, keeping `,` over `*` is *much* cleaner, but dodging `,` is just too much fun.
 
-[^11]: Much of this discussion has been spurred by tricks found [here](https://book.hacktricks.xyz/generic-methodologies-and-resources/python/bypass-python-sandboxes#dissecting-python-objects).
+[^10]: Much of this discussion has been spurred by tricks found [here](https://book.hacktricks.xyz/generic-methodologies-and-resources/python/bypass-python-sandboxes#dissecting-python-objects).
 
 Thus, I do claim that four is the best we can do. Anyone clever enough to prove otherwise is more than welcome to do so.
 
