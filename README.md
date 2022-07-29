@@ -88,7 +88,7 @@ getattr(x, "y") == getattr(*tuple(chr(121) if i else x for i in range(2)))
 
 As with tuples, any length of string is possible in principle, but we need to need to be crafty: recall that in order to build longer tuples, we needed the `__add__` method. But in order to access it, we used `getattr(tuple, "__add__")`, which already has a string in it!
 
-The key is the wonderful `dir` function, which returns a list of the *names* every attribute of an object[^7]. By turning this list into an iterator, we can `next` our way to *any* element, and then use that name as the argument to `getattr`! We might need *many* `next` calls, but they are all well within the rules. To keep from relying on the method order[^8] of the built-ins[^9], we can define a custom class:
+The key is the wonderful `dir` function, which returns a list of the *names* every attribute of an object[^7]. By turning this list into an iterator, we can `next` our way to *any* element, and then use that name as the argument to `getattr`! We might need *many* `next` calls, but they are all well within the rules. To keep from relying on the method order of the built-ins[^8], we can define a custom class:
 
 ```python
 class F:
@@ -104,7 +104,6 @@ class F:
 
 [^7]: Specifically, `dir(foo)` is equivalent to `foo.__dir__`, which *very conveniently* dodges that `.`.
 [^8]: This order is alphabetical, but could be adjusted slightly as new methods get added with each release.
-[^9]: @iPhoenix devised a pathological example where one invisibly messes with the built-ins to ruin this plan, but such an example could also be used to break `__add__` or even `getattr` altogether, rendering Python itself rather useless! Thus, this project also implicitly assumes that you're not doing anything to mess with Python internals, cause otherwise all bets are off.
 
 Such a class has the added benefit of containing relatively few default methods that get in the way, which you can see by running `dir` on an empty class:
 
@@ -138,7 +137,7 @@ Luckily, there's an easy but inelegant fix: use `globals()` instead. Namespace p
 
 So, let's build our way to a working Run-on Python implementation. We've got no classes, long strings, or anything else at our disposal, and we'll also refrain from importing anything at the moment.
 
-We're first gonna want some helper functions. The most crucial is the "twopler", a function with can curry two inputs to build a tuple using our ternary trick:
+We're first gonna want some helper functions. The most crucial is the "twopler", a function with can curry two inputs to build a tuple using the power of inner functions:
 
 ```python
 def tup(first):
@@ -147,7 +146,7 @@ def tup(first):
   return inner
 ```
 
-Thus, we can avoid unpacking within a comprehension, since we won't even be using a comprehension to build our tuples!
+Thus, we can avoid unpacking within a comprehension, since we won't even be using a raw comprehension to build our tuples!
 
 Next, we'll define a function that can call `next` an arbitrary number of times. Note that we need to do this *without* being able to store the iterator somewhere directly (since we don't have `__setitem__` yet), but luckily we can leverage the fact that functions bind their arguments to their parameter names:
 
@@ -313,18 +312,31 @@ We will now systematically go through each of our 24 excess marks to reason why 
 ### `~`
 * `~` is equivalent to `__inv__`.
 
+## A Few Objections
+
+* "If everything gets stored in `globals()`, how can you do recursion?"
+  * The answer is a call stack or something like it. Surely you've implemented one yourself before, right?
+* "How do you dictionaries? Like, actually."
+  * Here's a snippet to build the dictionary `d = {0: 1, 2: 3}`:
+```python
+  set_value(chr(100))(dict(tup(tup(0)(1))(tup(2)(3))))
+``` 
+* "What if you mess with the built-ins?"
+  * @iPhoenix devised such examples, but such a point is rather moot, as messing with the built-ins enough breaks Python normally!
+  * Thus, this project assumes you're not doing anything heinous *before* getting rid of your punctuation marks.
+
 ## Can We Do Any Better?
 With only four punctuation marks remaining, it seems unlikely we can get rid of any more. Indeed, I posit that this is true:
 * `()` are the main way to do function calls, and are also the only grouping symbol left. Seems like a no-brainer that those have to stay.
   * As pointed out by @commandblockguy, decorators can also call things, as can the `del` operator, but then we run into the problem of defining those things in the first place.
   * It is also possible to dodge parentheses entirely [in some situations](https://polygl0ts.ch/writeups/2021/b01lers/pyjail_noparens/README.html), again using decorators, but we need to take on even more symbols to make it happen.
-  * Further discussion[^10] has indicated that parentheses are the most likely among the remaining symbols that we could be rid of, perhaps through some exception shenanigans or just lots of decorators. The former would remove two symbols, and the latter just one, but both would be an improvement.
+  * Further discussion[^9] has indicated that parentheses are the most likely among the remaining symbols that we could be rid of, perhaps through some exception shenanigans or just lots of decorators. The former would remove two symbols, and the latter just one, but both would be an improvement.
 * `:` is required for just about every control flow construct. Also pretty necessary.
   * *If* you're okay with using a Turing-complete subset of Python, then I think you can dodge `:` by living entirely inside tuple comprehensions. However, this subset doesn't give you functions or classes, and feels definitely out of the spirit of this whole shebang.
 * `*` is very powerful, enabling us to drop `,` among other things. Unpacking is just too good to pass up.
   * Of course, keeping `,` over `*` is *much* cleaner, but dodging `,` is just too much fun.
 
-[^10]: Much of this discussion has been spurred by tricks found [here](https://book.hacktricks.xyz/generic-methodologies-and-resources/python/bypass-python-sandboxes#dissecting-python-objects).
+[^9]: Much of this discussion has been spurred by tricks found [here](https://book.hacktricks.xyz/generic-methodologies-and-resources/python/bypass-python-sandboxes#dissecting-python-objects).
 
 Thus, I do claim that four is the best we can do. Anyone clever enough to prove otherwise is more than welcome to do so.
 
