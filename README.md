@@ -316,11 +316,21 @@ We will now systematically go through each of our 24 excess marks to reason why 
 * "How do you dictionaries? Like, actually."
   * Here's a snippet to build the dictionary `d = {0: 1, 2: 3}`:
 ```python
-  set_value(chr(100))(dict(tup(tup(0)(1))(tup(2)(3))))
+set_value(chr(100))(dict(tup(tup(0)(1))(tup(2)(3))))
 ``` 
 * "What if you mess with the built-ins?"
   * @iPhoenix devised such examples, but such a point is rather moot, as messing with the built-ins enough breaks Python normally!
   * Thus, this project assumes you're not doing anything heinous *before* getting rid of your punctuation marks.
+* "Aren't classes kinda impossible since `self` is always the first argument of a method?"
+  * Fear not, for `*args` can save us! The object will get collected just like any other argument, and from there you just need to parse.
+  * Here's how to initialize an object that has a member `x` passed as the "first" argument:
+```python
+class C:
+    def __init__(*args):
+        setattr(*build(tuple)(tup(next(iter(args)))(chr(120)))(tuple(next(advance(1)(iter(args))) for _ in range(1))))
+        
+c = C(5)
+```
 
 ## Can We Do Any Better?
 With only four punctuation marks remaining, it seems unlikely we can get rid of any more. Indeed, I posit that this is true:
