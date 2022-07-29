@@ -83,7 +83,7 @@ and thus
 Alright, we've (almost completely) taken care of every mark on our list except `"`. Luckily, we can turn to the `chr` function to save the day: this little bugger takes in an ASCII code as an integer and returns the corresponding character. Thus, we can build up any string we like using only `()`, as `chr` is a single-argument function.
 
 ```python
-getattr(x, "y") == getattr(*tuple(chr(121) if i else x for i in range(2)))
+getattr(x, "y") == getattr(*(chr(121) if i else x for i in range(2)))
 ```
 
 As with tuples, any length of string is possible in principle, but we need to need to be crafty: recall that in order to build longer tuples, we needed the `__add__` method. But in order to access it, we used `getattr(tuple, "__add__")`, which already has a string in it!
@@ -183,21 +183,18 @@ def set_value(name):
   return inner
 ```
 
-Finally, we'll make builders for tuples and strings; these are the only two we'll need, since strings are ["special"](https://stackoverflow.com/questions/3525359/python-sum-why-not-strings) and tuples can be turned into anything else:
+And then we'll make a triply-nested iterable builder, which supports any type that implements `__add__`. This one's a real beauty:
 
 ```python
-def build_tuple(left):
-  def inner(right):
-    return getattr(*tup(tuple)(next(iter(dir(F)))))(*tup(left)(right))
-  return inner
-  
-def build_string(left):
-  def inner(right):
-    return getattr(*tup(str)(next(iter(dir(F)))))(*tup(left)(right))
-  return inner
+def build(t):
+  def first(left):
+    def second(right):
+      return getattr(*tup(t)(next(iter(dir(F)))))(*tup(left)(right))
+    return second
+  return first
 ```
 
-And finally, let's put our method names into convenient, single-letter variables[^10]:
+Finally, let's put our method names into convenient, single-letter variables[^10]:
 
 ```python
 set_value(chr(65))(next(iter(dir(F))))
