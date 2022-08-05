@@ -325,6 +325,9 @@ class C:
         
 set_value(chr(99))(C(5))
 ```
+* "I can't access values by their names, what gives?"
+  * Oh, yeah... see `set_value` modifies the `globals()` *for `util/__init__.py`*, meaning the interpreter won't be able to find any values set from outside the import by name.
+  * Instead, you can use the included `get_value` helper, which accesses the same `globals()` scope and thus can find all your variables at no additional charge.
 
 ## Can We Do Any Better?
 With only four punctuation marks remaining, it seems unlikely we can get rid of any more. Indeed, I posit that this is true:
