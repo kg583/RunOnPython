@@ -64,7 +64,7 @@ Note the subtlety of this trick: we have to use the truthiness of `i = 1` to dis
 
 Next, we construct longer tuples. We'll simply use the `__add__` method for tuples along with the tricks we already know[^6]:
 ```python
-(x, y, z) === getattr(*(y if i else x for i in range(2)), "__add__")(tuple(z for _ in range(1)))
+(x, y, z) == getattr(*(y if i else x for i in range(2)), "__add__")(tuple(z for _ in range(1)))
 ```
 We can extend this indefinitely, and also make it a bit less messy by using local variables (i.e. `locals()` members) along the way.
 
@@ -76,7 +76,7 @@ getattr(x, "y") == getattr(*("y" if i else x for i in range(2)))
 ```
 and thus
 ```python
-(x, y, z) === getattr(*("__add__" if i else tuple(y if i else x for i in range(2)) for i in range(2)))(tuple(z for _ in range(1)))
+(x, y, z) == getattr(*("__add__" if i else tuple(y if i else x for i in range(2)) for i in range(2)))(tuple(z for _ in range(1)))
 ```
 
 ### You Knew `chr` Was Coming
@@ -86,19 +86,16 @@ Alright, we've (almost completely) taken care of every mark on our list except `
 getattr(x, "y") == getattr(*(chr(121) if i else x for i in range(2)))
 ```
 
-As with tuples, any length of string is possible in principle, but we need to need to be crafty: recall that in order to build longer tuples, we needed the `__add__` method. But in order to access it, we used `getattr(tuple, "__add__")`, which already has a string in it!
+As with tuples, any length of string is possible in principle, but we need to be crafty: recall that in order to build longer tuples, we needed the `__add__` method. But in order to access it, we used `getattr(tuple, "__add__")`, which already has a string in it!
 
 The key is the wonderful `dir` function, which returns a list of the *names* every attribute of an object[^7]. By turning this list into an iterator, we can `next` our way to *any* element, and then use that name as the argument to `getattr`! We might need *many* `next` calls, but they are all well within the rules. To keep from relying on the method order of the built-ins[^8], we can define a custom class:
 
 ```python
 class F:
-  def __add__():
-    pass
-    
-  def __getitem__():
+  def __add__(self):
     pass
   
-  def __setitem__():
+  def __setitem__(self):
     pass
 ```
 
@@ -126,10 +123,10 @@ Our problems are furthermore compounded by the fact that `locals()` is actually 
 
 ```python
 locals().__setitem__("S", "__setitem__")
-getattr(*tuple("__setitem__" if i else locals() for i in range(2)))("S", "__setitem__")
+getattr(*("__setitem__" if i else locals() for i in range(2)))("S", "__setitem__")
 ```
 
-The first of those lines does exactly what'd you expect: saves `'__setitem__'` to `S` so we can use it later. The second, however, doesn't, because of the following devilish detail: comprehensions define new variable scopes. Once inside a comprehension, `locals()` refers not to the enclosing scope you came from, but the scope of the comprehension itself! Thus, setting the "local" value of `S` is useless, since it does not live outside the comprehension.
+The first of those lines does exactly what you'd expect: saves `'__setitem__'` to `S` so we can use it later. The second, however, doesn't, because of the following devilish detail: comprehensions define new variable scopes. Once inside a comprehension, `locals()` refers not to the enclosing scope you came from, but the scope of the comprehension itself! Thus, setting the "local" value of `S` is useless, since it does not live outside the comprehension.
 
 Luckily, there's an easy but inelegant fix: use `globals()` instead. Namespace purists may rage, but it's the only option we've got. And now that we've got `globals()`, we can store away values in-between unpackings to keep Guido happy.
 
@@ -150,7 +147,7 @@ Thus, we can avoid unpacking within a comprehension, since we won't even be usin
 
 Next, we'll define a function that can call `next` an arbitrary number of times. Note that we need to do this *without* being able to store the iterator somewhere directly (since we don't have `__setitem__` yet), but luckily we can leverage the fact that functions bind their arguments to their parameter names:
 
-```python  
+```python
 def advance(num):
   def inner(iterator):
     for _ in range(num):
@@ -163,46 +160,43 @@ With it, we can nab our method names from the class `F` defined earlier:
 
 ```python
 '__add__' == next(iter(dir(F)))
-'__getitem__' == next(advance(10)(iter(dir(F))))
-'__setitem__' == next(advance(24)(iter(dir(F))))
+'__setitem__' == next(advance(23)(iter(dir(F))))
 ```
 
-A function that simplifies `__getitem__` calls would also be nice (recall that we have to always fetch from `globals()`):
-
-```python
-def get_value(name):
-  return getattr(*tup(globals())(next(advance(10)(iter(dir(F))))))(name)
-```
-
-We'll do the same for `__setitem__` so we can offload unpacking to the function itself:
+A function that simplifies `__setitem__` calls would also be nice (recall that we have to always use `globals()` for variables):
 
 ```python
 def set_value(name):
   def inner(value):
-    return getattr(*tup(globals())(next(advance(24)(iter(dir(F))))))(*tup(name)(value))
+    return getattr(*tup(globals())(next(advance(23)(iter(dir(F))))))(*tup(name)(value))
   return inner
 ```
 
-And then we'll make a triply-nested iterable builder, which supports any type that implements `__add__`. This one's a real beauty:
-
-```python
-def build(t):
-  def first(left):
-    def second(right):
-      return getattr(*tup(t)(next(iter(dir(F)))))(*tup(left)(right))
-    return second
-  return first
-```
-
-Finally, let's put our method names into convenient, single-letter variables[^10]:
+We can use this helper to put our method names into convenient, single-letter variables, along with `range(1)` and `range(2)` for convenience:
 
 ```python
 set_value(chr(65))(next(iter(dir(F))))
-set_value(chr(71))(next(advance(10)(iter(dir(F)))))
-set_value(chr(83))(next(advance(24)(iter(dir(F)))))
+set_value(chr(83))(next(advance(23)(iter(dir(F)))))
+
+set_value(chr(79))(range(1))
+set_value(chr(84))(range(2))
 ```
 
-Presto! We've got ourselves an implementation of Run-on Python that isn't completely horrendous to use. Only one last step to round off our endeavor.
+Finally, we'll give ourselves the ultimate builder function. This wonderful fellow can assemble *any* iterable that implements `__add__`, most importantly strings; we can use it by first calling with a type and initial value, then each element in order, and then an empty call:
+```python
+def build(t):
+    def init(initial):
+        def inner(*element):
+            if not element:
+                return initial
+            return init(getattr(*tup(t)(A))(*tup(initial)(next(iter(element)))))
+        return inner
+    return init
+```
+
+Presto! We've got ourselves an implementation of Run-on Python that isn't completely horrendous to use. You can find all of this code plus some additional helper objects in `src/util/__init__py` (and thus you can import `util` to start your next project!).
+
+Only one last step to round off our endeavor.
 
 ## How To Make Like a Poet and Rid Yourself of Punctuation
 We will now systematically go through each of our 24 excess marks to reason why they are not necessary. Buckle up, cause this could take a while.
@@ -327,7 +321,7 @@ set_value(chr(100))(dict(tup(tup(0)(1))(tup(2)(3))))
 ```python
 class C:
     def __init__(*args):
-        setattr(*build(tuple)(tup(next(iter(args)))(chr(120)))(tuple(next(advance(1)(iter(args))) for _ in range(1))))
+        setattr(*build(tuple)(tup(next(iter(args)))(chr(120)))(tuple(next(advance(1)(iter(args))) for _ in range(1)))())
         
 c = C(5)
 ```
