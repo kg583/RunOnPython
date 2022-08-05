@@ -323,7 +323,7 @@ class C:
     def __init__(*args):
         setattr(*build(tuple)(tup(next(iter(args)))(chr(120)))(tuple(next(advance(1)(iter(args))) for _ in range(1)))())
         
-c = C(5)
+set_value(chr(99))(C(5))
 ```
 
 ## Can We Do Any Better?

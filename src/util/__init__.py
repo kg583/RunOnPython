@@ -10,8 +10,11 @@ class F:
 
 
 def tup(first):
-    def inner(second):
-        return tuple(second if i else first for i in range(2))
+    def inner(*second):
+        if not second:
+            return tuple(first for _ in range(1))
+
+        return tuple(next(iter(second)) if i else first for i in range(2))
 
     return inner
 
@@ -75,3 +78,6 @@ build_string = build_map(str)(chr)(str())(str())
 
 set_value(chr(68))(build_string(95)(95)())
 build_magic = build_map(str)(chr)(D)(D)
+
+set_value(chr(69))(build_magic(101)(113)())
+set_value(chr(77))(build_magic(109)(97)(105)(110)())
