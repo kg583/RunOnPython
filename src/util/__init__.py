@@ -66,12 +66,8 @@ def build_map(t):
     return mapper
 
 
-def identity(x):
-    return x
-
-
 def build(t):
-    return build_map(t)(identity)
+    return build_map(t)(lambda i: t(i for _ in O))(t())(t())
 
 
 build_string = build_map(str)(chr)(str())(str())
