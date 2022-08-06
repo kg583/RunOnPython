@@ -202,7 +202,7 @@ Only one last step to round off our endeavor.
 We will now systematically go through each of our 24 excess marks to reason why they are not necessary. Buckle up, cause this could take a while.
 
 ### `!`
-* `!=` is equivalent to `__neq__`.
+* `!=` is equivalent to `__neq__` or `not in` with a singleton tuple.
 
 ### `"`
 * **String literals** can be built using `chr`.
@@ -265,7 +265,7 @@ We will now systematically go through each of our 24 excess marks to reason why 
 * `<<=` is equivalent to `__ilshift__`.
 
 ### `=`
-* `==` is equivalent to `__eq__`.
+* `==` is equivalent to `__eq__` or `in` with a singleton tuple.
 * **Assignments** can be replaced by direct calls to `__setitem__` in `locals()` or `globals()`.
 * **Class definitions** are equivalent to `type`.
 * **Default function arguments** can be replaced with explicit passes of `None` followed by replacements in the function body.
@@ -281,8 +281,8 @@ We will now systematically go through each of our 24 excess marks to reason why 
 * **Decorators** are equivalent to calls to explicit outer functions.
 
 ### `[]`
-* **List literals** can be built from tuples.
-* **Subscripting** and **slicing** are equivalent to `__getitem__` and `__setitem__`.
+* **List literals** can be built from tuples or generators.
+* **Subscripting** and **slicing** are equivalent to `__getitem__` and `__setitem__` via `slice`.
 * **Type hints** are never necessary for function definitions or assignment statements.
 
 ### `\ `
@@ -293,8 +293,8 @@ We will now systematically go through each of our 24 excess marks to reason why 
 * `^=` is equivalent to `__ixor__`.
 
 ### `{}`
-* **Dictionary literals** can be built from tuples of tuples.
-* **Set literals** can be built from tuples.
+* **Dictionary literals** can be built from tuples or generators of tuples.
+* **Set literals** can be built from tuples or generators.
 
 ### `|`
 * `|` is equivalent to `__or__`.
