@@ -285,7 +285,7 @@ We will now systematically go through each of our 24 excess marks to reason why 
 * **Subscripting** and **slicing** are equivalent to `__getitem__` and `__setitem__`.
 * **Type hints** are never necessary for function definitions or assignment statements.
 
-### `\`
+### `\ `
 * **Escape sequences** can be replaced by explicit `chr` calls.
 
 ### `^`
