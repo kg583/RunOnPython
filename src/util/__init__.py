@@ -9,21 +9,29 @@ class F:
         pass
 
 
-def tup(first):
-    def inner(*second):
-        if not second:
-            return tuple(first for _ in range(1))
-
-        return tuple(next(iter(second)) if i else first for i in range(2))
-
-    return inner
-
-
 def advance(num):
     def inner(iterator):
         for _ in range(num):
             next(iterator)
         return iterator
+
+    return inner
+
+
+def f(iterable):
+    return next(iter(iterable))
+
+
+def s(iterable):
+    return next(advance(1)(iter(iterable)))
+
+
+def tup(first):
+    def inner(*second):
+        if not second:
+            return tuple(first for _ in range(1))
+
+        return tuple(f(second) if i else first for i in range(2))
 
     return inner
 
@@ -39,7 +47,7 @@ def set_value(name):
     return inner
 
 
-set_value(chr(65))(next(iter(dir(F))))
+set_value(chr(65))(f(dir(F)))
 set_value(chr(71))(next(advance(10)(iter(dir(F)))))
 set_value(chr(83))(next(advance(24)(iter(dir(F)))))
 
@@ -49,13 +57,19 @@ set_value(chr(84))(range(2))
 
 def build_map(t):
     def mapper(func):
-        def init(initial):
-            def end(final):
+        def init(*initial):
+            if not initial:
+                return init(t())
+
+            def end(*final):
+                if not final:
+                    return end(t())
+
                 def inner(*element):
                     if not element:
-                        return getattr(*tup(t)(A))(*tup(initial)(final))
+                        return getattr(*tup(t)(A))(*tup(f(initial))(f(final)))
 
-                    return init(getattr(*tup(t)(A))(*tup(initial)(func(next(iter(element))))))(final)
+                    return init(getattr(*tup(t)(A))(*tup(f(initial))(func(f(element)))))(f(final))
 
                 return inner
 
@@ -66,11 +80,13 @@ def build_map(t):
     return mapper
 
 
-def build(t):
-    return build_map(t)(lambda i: t(i for _ in O))(t())(t())
+def build_iterable(t):
+    return build_map(t)(lambda i: t(i for _ in O))()()
 
 
-build_string = build_map(str)(chr)(str())(str())
+build_list = build_iterable(list)
+build_tuple = build_iterable(tuple)
+build_string = build_map(str)(chr)()()
 
 set_value(chr(68))(build_string(95)(95)())
 build_magic = build_map(str)(chr)(D)(D)
