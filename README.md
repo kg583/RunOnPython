@@ -235,7 +235,7 @@ We will now systematically go through each of our 24 excess marks to reason why 
 * Multiple **imports** on a single line can simply be split into multiple multiple lines. [PEP-8](https://peps.python.org/pep-0008/) even says you *should*.
 * **Unpacking** can always be done across multiple lines or statements.
 * **Multidimensional slices** are passed as tuples of `slice` objects into `__getitem__`, which can be resolved using known tricks.
-* `with` statements with multiple **targets** are [semantically equivalent](https://docs.python.org/3/reference/compound_stmts.html#the-with-statement) to nestings of singular targets.
+* `with` statements with **multiple targets** are [semantically equivalent](https://docs.python.org/3/reference/compound_stmts.html#the-with-statement) to nestings of singular targets.
 
 ### `-`
 * `-` is equivalent to `__sub__` as a binary operator and `__neg__` as a unary operator.
