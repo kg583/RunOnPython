@@ -362,9 +362,10 @@ With only four punctuation marks remaining, it seems unlikely we can get rid of 
   * As pointed out by @commandblockguy, decorators can also call things, as can the `del` operator, but then we run into the problem of defining those things in the first place.
   * It is also possible to dodge parentheses entirely [in some situations](https://polygl0ts.ch/writeups/2021/b01lers/pyjail_noparens/README.html), again using decorators, but we need to take on even more symbols to make it happen.
 * `:` is required for just about every control flow construct. Also pretty necessary.
-  * *If* you're okay with using a Turing-complete subset of Python, then I think you can dodge `:` by living entirely inside tuple comprehensions. However, this subset doesn't give you functions or classes, and feels definitely out of the spirit of this whole shebang.
+  * *If* you're okay with using a Turing-complete subset of Python, then I think you can dodge `:` by living entirely inside tuple comprehensions. See the mission statement section for why we're not doing this.
 * `*` is very powerful, enabling us to drop `,` among other things. Unpacking is just too good to pass up.
   * Of course, keeping `,` over `*` is *much* cleaner, but dodging `,` is just too much fun.
+  * Lambda calculus can also be implemented using only `()` and `:`, but again, that's not Python, just a whole lot of currying.
 
 Though I still currently claim that four is the best we can do, attempts to breach that barrier are ongoing and logged in `src/experiment`. For example, it is possible to write `Hello World!` with just `@` and `:`! Contributions to these experiments or the other code samples are welcomed.
 
