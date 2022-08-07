@@ -367,7 +367,9 @@ With only four punctuation marks remaining, it seems unlikely we can get rid of 
   * Of course, keeping `,` over `*` is *much* cleaner, but dodging `,` is just too much fun.
   * Lambda calculus can also be implemented using only `()` and `:`, but again, that's not Python, just a whole lot of currying.
 
-Though I still currently claim that four is the best we can do, attempts to breach that barrier are ongoing and logged in `src/experiment`. For example, it is possible to write `Hello World!` with just `@` and `:`! Contributions to these experiments or the other code samples are welcomed.
+Though I still currently claim that four is the best we can do, attempts to breach that barrier are ongoing and logged in `src/experiment`. For example, it is possible to write `Hello World!` with just `@` and `:`[^11]! Contributions to these experiments or the other code samples are welcomed.
+
+[^11]: A separate gist of this file (which might later become its permanent home) can be found [here](https://gist.github.com/kg583/74dcf08574bb37f13be6fd978279bd6e).
 
 ## How Can I Write Run-on Python?
 I'm glad you asked. At the moment there are plans for a transpiler which can walk a given Python AST and burn away those blasphemous punctuation marks, but no implementation is yet available. Some parts are pretty easy, such as recognizing instances where we can use one of our primary tricks. Other snippets are much trickier if the user isn't kind, requiring more complex restructuring of the AST before compiling back down to valid code.
