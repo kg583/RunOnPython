@@ -340,7 +340,7 @@ With only four punctuation marks remaining, it seems unlikely we can get rid of 
 * `*` is very powerful, enabling us to drop `,` among other things. Unpacking is just too good to pass up.
   * Of course, keeping `,` over `*` is *much* cleaner, but dodging `,` is just too much fun.
 
-[^9]: Much of this discussion has been spurred by tricks found [here](https://book.hacktricks.xyz/generic-methodologies-and-resources/python/bypass-python-sandboxes#dissecting-python-objects).
+[^9]: Much of this discussion has been spurred by tricks found [here](https://book.hacktricks.xyz/generic-methodologies-and-resources/python/bypass-python-sandboxes).
 
 Thus, I do claim that four is the best we can do. Anyone clever enough to prove otherwise is more than welcome to do so.
 
