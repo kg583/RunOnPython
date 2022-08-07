@@ -340,15 +340,12 @@ With only four punctuation marks remaining, it seems unlikely we can get rid of 
 * `()` are the main way to do function calls, and are also the only grouping symbol left. Seems like a no-brainer that those have to stay.
   * As pointed out by @commandblockguy, decorators can also call things, as can the `del` operator, but then we run into the problem of defining those things in the first place.
   * It is also possible to dodge parentheses entirely [in some situations](https://polygl0ts.ch/writeups/2021/b01lers/pyjail_noparens/README.html), again using decorators, but we need to take on even more symbols to make it happen.
-  * Further discussion[^9] has indicated that parentheses are the most likely among the remaining symbols that we could be rid of, perhaps through some exception shenanigans or just lots of decorators. The former would remove two symbols, and the latter just one, but both would be an improvement.
 * `:` is required for just about every control flow construct. Also pretty necessary.
   * *If* you're okay with using a Turing-complete subset of Python, then I think you can dodge `:` by living entirely inside tuple comprehensions. However, this subset doesn't give you functions or classes, and feels definitely out of the spirit of this whole shebang.
 * `*` is very powerful, enabling us to drop `,` among other things. Unpacking is just too good to pass up.
   * Of course, keeping `,` over `*` is *much* cleaner, but dodging `,` is just too much fun.
 
-[^9]: Much of this discussion has been spurred by tricks found [here](https://book.hacktricks.xyz/generic-methodologies-and-resources/python/bypass-python-sandboxes).
-
-Thus, I do claim that four is the best we can do. Anyone clever enough to prove otherwise is more than welcome to do so.
+Though I still currently claim that four is the best we can do, attempts to breach that barrier are ongoing and logged in `src/experiment`. For example, it is possible to write `Hello World!` with just `@` and `:`! Contributions to these experiments or the other code samples are welcomed.
 
 ## How Can I Write Run-on Python?
 I'm glad you asked. At the moment there are plans for a transpiler which can walk a given Python AST and burn away those blasphemous punctuation marks, but no implementation is yet available. Some parts are pretty easy, such as recognizing instances where we can use one of our primary tricks. Other snippets are much trickier if the user isn't kind, requiring more complex restructuring of the AST before compiling back down to valid code.
