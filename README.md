@@ -292,6 +292,7 @@ We will now systematically go through each of our 24 excess marks to reason why 
 * **Assignments** can be replaced by direct calls to `__setitem__` in `locals()` or `globals()`.
 * **Class definitions** are equivalent to `type`.
 * **Default function arguments** can be replaced with explicit passes of `None` followed by replacements in the function body.
+* **Keyword arguments** can be passed using dictionaries.
 
 ### `>`
 * `>` is equivalent to `__gt__`.
