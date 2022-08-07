@@ -5,11 +5,7 @@ There are lots of punctuation marks that can appear in Python code. Strictly spe
 
 [^1]: I'm well aware of f-strings and its predecessors, but those are once again *syntactic* elements of the language.
 
-We also don't want our code to be all inside a string literal itself and use `exec`; the reason for this restraint is two-fold:
-1. [It's already been done.](https://codegolf.stackexchange.com/questions/110648/fewest-distinct-characters-for-turing-completeness)
-3. We want our code to be writable in your favorite IDE; wrapping it all in a string ditches any attempts at highlighting or lexical analysis.
-
-Thus, this project considers all *single* punctuation marks that are syntactically valid *outside* of string literals and *without* the need for `exec` or any of its cousins. As of release 3.10[^2][^3], they are
+Thus, this project considers all *single* punctuation marks that are syntactically valid *outside* of string literals. As of release 3.10[^2][^3], they are
 
 `! " # % & ' () * + , - . / : ; < = > @ [] \ ^ {} | ~`
 
@@ -21,6 +17,27 @@ Compositions of two or three of the above symbols, like `+=` or `...`, are just 
 So the question is: how many of the above 28 punctuation marks are *necessary* to write any and all Python code?
 
 As far as I can reason, the answer is just ***four***: `()`, `:`, and `*`.
+
+## Our Mission Statement
+
+Let's make it clear exactly what the goal is here. The first obvious trivialization of this project is wrapping up everything inside `exec`, requiring only `"`, `()`, and `+` to make the magic happen; this is also the trick to minimizing the space of *all* characters to execute arbitrary code, as shown [here](https://codegolf.stackexchange.com/questions/110648/fewest-distinct-characters-for-turing-completeness).
+
+However, this is boring; not only has it already been done, but wrapping all your code inside a string literal (and a hard to read one at that!) almost defeats the point, as one could simply write code as they always do and read the file into an encoder. There's no meat to the problem, not to mention that such code is unparseable by your favorite IDE.  So, we're not allowed to wrap everything up in a string and call it a day. PyCharm or Eclipse or Notepad++ should be able to highlight our code as we go ~~and flag all of our abominations~~.
+
+We also want to be able to emulate *any* possible Python syntax or construction. This doesn't mean that *everything* will be possible (most things certainly won't be), but that *anything* can be approximated well enough in form and function. For example, we'll soon learn methods to ditch the `=` sign in our code, replacing it with `__eq__` calls and `__setitem__` on the dictionary of variables. These substitutions match the function of `=` (and `==`) *exactly*, at the interpreter level.
+
+But what about default function arguments? You'd say there's no way to emulate those with some funky magic method, and you'd be correct. However, we can still *approximate* the form and function of default arguments by explicitly passing `None` in our calls (which is what the interpreter is doing under the hood!). We can then write our functions like
+```python
+def foo(bar, baz):
+    print(bar)
+    print(baz if baz is not None else "Default argument!")
+```
+
+This is just one small example of what Run-on Python is trying to do: let you write whatever code you want, but your keyboard is broken in a very specific way that doesn't let you type punctuation, and thus force you to take some creative liberties in getting that code to behave the same way.
+
+Of course, "behave the same way" is a bit subjective sometimes, as one could claim that a Turing machine can "behave" identically to any Python program. You'd be right, but you'd also be very wrong: a Turing machine has no variables, nor classes, nor functions, nor printing to `stdout`. Being able to compute anything is not quite enough.
+
+Basically, one should be able to take any existing Python code, make some (probably several) adjustments, and obtain Run-on Python code that does the same thing in the same ways. Capiche? Cool, let's do it.
 
 ## The Main Tricks
 We'll first establish the most important tricks in removing punctuation from your code. These will actually do most of the heavy lifting for us when it comes to removing marks, particularly any and all operators.
