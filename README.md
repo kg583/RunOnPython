@@ -22,7 +22,9 @@ As far as I can reason, the answer is just ***four***: `()`, `:`, and `*`.
 
 Let's make it clear exactly what the goal is here. The first obvious trivialization of this project is wrapping up everything inside `exec`, requiring only `"`, `()`, and `+` to make the magic happen; this is also the trick to minimizing the space of *all* characters to execute arbitrary code, as shown [here](https://codegolf.stackexchange.com/questions/110648/fewest-distinct-characters-for-turing-completeness).
 
-However, this is boring; not only has it already been done, but wrapping all your code inside a string literal (and a hard to read one at that!) almost defeats the point, as one could simply write code as they always do and read the file into an encoder. There's no meat to the problem, not to mention that such code is unparseable by your favorite IDE.  So, we're not allowed to wrap everything up in a string and call it a day. PyCharm or Eclipse or Notepad++ should be able to highlight our code as we go ~~and flag all of our abominations~~.
+However, this is boring; not only has it already been done, but wrapping all your code inside a string literal (and a hard to read one at that!) almost defeats the point, as one could simply write code as they always do and read the file into an encoder. There's no meat to the problem, not to mention that such code is unparseable by your favorite IDE.  So, we're not allowed to wrap everything up in a string and call it a day[^4]. PyCharm or Eclipse or Notepad++ should be able to highlight our code as we go ~~and flag all of our abominations~~.
+
+[^4]: To this end, we'll also disallow other kinds of RCE exploits. This should be *code*, dammit, not a hack.
 
 We also want to be able to emulate *any* possible Python syntax or construction. This doesn't mean that *everything* will be possible (most things certainly won't be), but that *anything* can be approximated well enough in form and function. For example, we'll soon learn methods to ditch the `=` sign in our code, replacing it with `__eq__` calls and `__setitem__` on the dictionary of variables. These substitutions match the function of `=` (and `==`) *exactly*, at the interpreter level.
 
@@ -47,9 +49,9 @@ Every operator in Python is converted into a certain *magic method call* when in
 * `x % y` becomes `x.__mod__(y)`
 * `x += y` becomes `x.__iadd__(y)`
 
-and so on[^4]. You can find a list of all of them and their correspondences [here](https://docs.python.org/3/reference/datamodel.html).
+and so on[^5]. You can find a list of all of them and their correspondences [here](https://docs.python.org/3/reference/datamodel.html).
 
-[^4]: Sometimes these default to the *right* operand, becoming `y.__rmod__(x)`, but this is hardly relevant to our purposes.
+[^5]: Sometimes these default to the *right* operand, becoming `y.__rmod__(x)`, but this is hardly relevant to our purposes.
 
 But it should be evident that this fact lets us ditch every operator right from the get-go, since they get effectively removed anyway.
 
@@ -58,10 +60,11 @@ In removing every operator, we've made it almost abundantly necessary to have a 
 * `x.y` becomes `getattr(x, "y")`
 * `x.y = z` becomes `setattr(x, "y", z)`
 
-So not only is `.` out of the picture, `=` appears to be as well; we just need a way to set a simple local variable, one that isn't an attribute. Luckily, local variables are actually stored in a giant dictionary, `locals()`[^5], that we can modify using `__setitem__`. That is, we have
+So not only is `.` out of the picture, `=` appears to be as well; we just need a way to set a simple local variable, one that isn't an attribute. Luckily, local variables are actually stored in a giant dictionary, `locals()`[^6][^7], that we can modify using `__setitem__`. That is, we have
 * `x = y` becomes `locals().__setitem__("x", y)` becomes `getattr(locals(), "__setitem__")("x", y)`
 
-[^5]: Or sometimes `globals()`, which will be important later.
+[^6]: Or sometimes `globals()`, which will be important later.
+[^7]: Or sometimes [not at all](https://docs.python.org/3/library/functions.html#locals).
 
 What's most interesting about the above is that there is a sense in which `x = y` *literally means* the expanded form on the right. Overiding `__setitem__` for the built-in `dict` class would apply, as would messing about with `getattr` (both of which are highly frowned upon outside shenanigans like this).
 
@@ -79,13 +82,13 @@ We can now employ the ternary operator to replace the comma in the following way
 
 Note the subtlety of this trick: we have to use the truthiness of `i = 1` to distinguish `x` and `y` in the tuple construction *without relying on any other operators*, as otherwise we'd be right back to needing a comma in the function call!
 
-Next, we construct longer tuples. We'll simply use the `__add__` method for tuples along with the tricks we already know[^6]:
+Next, we construct longer tuples. We'll simply use the `__add__` method for tuples along with the tricks we already know[^8]:
 ```python
 (x, y, z) == getattr(*(y if i else x for i in range(2)), "__add__")(tuple(z for _ in range(1)))
 ```
 We can extend this indefinitely, and also make it a bit less messy by using local variables (i.e. `locals()` members) along the way.
 
-[^6]: We can drop `tuple` from unpacking statements, since generators can be unpacked as well, saving us a few letters.
+[^8]: We can drop `tuple` from unpacking statements, since generators can be unpacked as well, saving us a few letters.
 
 The coup-de-grace is then Python's wonderful fellow `*`, the unpacking operator. Luckily, almost every operator is binary, so we don't need to do many more shenanigans to get all the boilerplate arguments we need into a tuple.
 ```python
@@ -111,7 +114,7 @@ getattr(x, "y") == getattr(*(chr(121) if i else x for i in range(2)))
 
 As with tuples, any length of string is possible in principle, but we need to be crafty: recall that in order to build longer tuples, we needed the `__add__` method. But in order to access it, we used `getattr(tuple, "__add__")`, which already has a string in it!
 
-The key is the wonderful `dir` function, which returns a list of the *names* every attribute of an object[^7]. By turning this list into an iterator, we can `next` our way to *any* element, and then use that name as the argument to `getattr`! We might need *many* `next` calls, but they are all well within the rules. To keep from relying on the method order of the built-ins[^8], we can define a custom class:
+The key is the wonderful `dir` function, which returns a list of the *names* every attribute of an object[^9]. By turning this list into an iterator, we can `next` our way to *any* element, and then use that name as the argument to `getattr`! We might need *many* `next` calls, but they are all well within the rules. To keep from relying on the method order of the built-ins[^10], we can define a custom class:
 
 ```python
 class F:
@@ -122,8 +125,8 @@ class F:
     pass
 ```
 
-[^7]: Specifically, `dir(foo)` is equivalent to `foo.__dir__`, which *very conveniently* dodges that `.`.
-[^8]: This order is alphabetical, but could be adjusted slightly as new methods get added with each release.
+[^9]: Specifically, `dir(foo)` is equivalent to `foo.__dir__`, which *very conveniently* dodges that `.`.
+[^10]: This order is alphabetical, but could be adjusted slightly as new methods get added with each release.
 
 Such a class has the added benefit of containing relatively few default methods that get in the way, which you can see by running `dir` on an empty class:
 
