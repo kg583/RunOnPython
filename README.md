@@ -79,6 +79,12 @@ and thus
 (x, y, z) == getattr(*("__add__" if i else tuple(y if i else x for i in range(2)) for i in range(2)))(tuple(z for _ in range(1)))
 ```
 
+In the case of `getattr`, arguably the most common call of all, the built-in `operator` module can also save the day via `attrgetter`:
+```python
+getattr(x, "y") == operator.attrgetter("y")(x)
+```
+This particular convenience makes use of inner functions, which will prove to be our best friends further down the road.
+
 ### You Knew `chr` Was Coming
 Alright, we've (almost completely) taken care of every mark on our list except `"`. Luckily, we can turn to the `chr` function to save the day: this little bugger takes in an ASCII code as an integer and returns the corresponding character. Thus, we can build up any string we like using only `()`, as `chr` is a single-argument function.
 
