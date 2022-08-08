@@ -44,7 +44,7 @@ class Join:
 @str
 @len
 @str
-class Five__:
+class Slice5:
     pass
 
 
@@ -56,7 +56,7 @@ class Five__:
 @str
 @len
 @str
-class Seven___:
+class Slice7__:
     pass
 
 
@@ -71,10 +71,10 @@ class Adder:
 
 @Adder
 @Join
-@Five__
+@Slice5
 @list
 @reversed
-@Seven___
+@Slice7__
 @list
 @reversed
 @str
@@ -87,17 +87,17 @@ class Hello:
 @chr
 @len
 @str
-class ThirtyTwo____:
+class ChrThirtyTwo_:
     pass
 
 
 @Adder
-@ThirtyTwo____
+@ChrThirtyTwo_
 @Join
-@Five__
+@Slice5
 @list
 @reversed
-@Seven___
+@Slice7__
 @list
 @reversed
 @str
@@ -110,5 +110,5 @@ class World:
 @chr
 @len
 @str
-class ThirtyThree___:
+class ChrThirtyThree:
     pass
