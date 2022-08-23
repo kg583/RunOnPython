@@ -7,12 +7,12 @@ If you read the main `README.md` and are at least decently familiar with Python,
 A *decorator* is usually described as a device that modifies some existing function. The syntax is `@[name]`, which appears just above a function definition. For example, in the following class, we use `@property` to turn a standard getter method into one that doesn't need to be called:
 ```python
 class Foo:
-	def my_value(self):
-		return 7
+    def my_value(self):
+        return 7
 	
-	@property
-	def my_property(self):
-		return 7
+    @property
+    def my_property(self):
+        return 7
 		
 print(Foo().my_value())
 print(Foo().my_property)
@@ -28,7 +28,7 @@ Furthermore, the decorator is allowed to be *anything* callable; it doesn't need
 ```python
 @str
 def my_func():
-	print("Off I go!")
+    print("Off I go!")
 	
 assert isinstance(my_func, str)
 ```
@@ -38,7 +38,7 @@ Perhaps this is enough to predict where we are headed. If not, then a final remi
 @list
 @str
 def my_func():
-	print("Off I go!")
+    print("Off I go!")
 
 assert isinstance(my_func, list)
 ```
