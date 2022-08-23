@@ -117,4 +117,46 @@ Thus, we can obtain slices from the left, but what about the `__getitem__` call?
 assert attrgetter("x")(y) == y.x
 assert itemgetter(x)(y) == y[x]
 ```
-Just look at that currying! I claimed before that *most* built-ins do not admit this kind of design, but these are among the exceptions.
+Just look at that currying! I claimed before that *most* built-ins do not admit this kind of design, but these are among the exceptions. They thus allow us to make the following construction:
+```python
+@itemgetter
+@lambda _: 0
+class GetTheFirstElement:
+    pass
+    
+@GetTheFirstElement
+@str
+class ThisIsALeftAngleBracket:
+    pass
+    
+assert ThisIsALeftAngleBracket == "<"
+```
+And this is just the tip of the iceberg! With `@slice`, we can grab a whole section of the string as desired... except, we can't, at least not in the way we want. Recall that the actual string we want is at the *end* of the representation, and might be preceded by all kinds of gibberish depending on the module. But, if we can slice from the end instead, the amount we have to cut is fixed, namely `'>` at the very end.
+
+We can do this via `reversed`, and then leverage the fact that slicing works just as well on lists:
+```python
+@itemgetter
+@slice
+@lambda _: 23
+class Slice23:
+    pass
+    
+@itemgetter
+@slice
+@lambda _: 25
+class Slice25
+    pass
+
+@Slice23
+@list
+@reversed
+@Slice25
+@list
+@reversed
+@str
+class ThisIsAStringOfLength23:
+    pass
+```
+But wait! We don't get a string out in the end! It's a darn list of characters! And you know what that means... `join`, `join`, `join`!
+
+### Gold Nuggets? I'm Rich!
