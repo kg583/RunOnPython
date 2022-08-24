@@ -144,7 +144,7 @@ class Slice23:
 @itemgetter
 @slice
 @lambda _: 25
-class Slice25
+class Slice25:
     pass
 
 @Slice23
@@ -157,6 +157,76 @@ class Slice25
 class ThisIsAStringOfLength23:
     pass
 ```
-But wait! We don't get a string out in the end! It's a darn list of characters! And you know what that means... `join`, `join`, `join`!
+But wait, we don't get a string out in the end! It's just a darn list of characters! And you know what that means...
 
-### Gold Nuggets? I'm Rich!
+## `/attribute`
+This part's pretty easy to piece together. We've already got all the ingredients: `attrgetter`, `itemgetter`, and a little ol' friend called `dir`. We can mix these together into a delicious attribute-accessing parfait, complete with all of your favorite string methods and functions.
+
+Let's get a hold of `str.__add__` first, since it's pretty easy:
+```python
+@attrgetter
+@next
+@iter
+@dir
+@lambda _: str
+class GetStrDotAdd:
+    pass
+```
+We use it by attaching it to one string (i.e. decorating the class with the first operand), then calling the attachment on the other. Recall our use of carefully-chosen `slice`s:
+```python
+@GetStrDotAdd
+@Slice4
+@list
+@reversed
+@Slice6
+@list
+@reversed
+@str
+class Left:
+    pass
+
+@Left
+@Slice5
+@list
+@reversed
+@Slice7
+@list
+@reversed
+@str
+class Right:
+    pass
+
+assert Right == "LeftRight"
+```
+
+### Joining The Cause
+
+Our good friend `str.join` is a bit stranger; we need to first bind it to the empty string so we can join up our lists of characters with no separators. We'll get a hold of the empty string using another clever slice:
+```python
+@Slice0
+@str
+class EmptyString:
+    pass
+```
+
+Now we need `join` itself, which lives at index 56 inside `dir(str)`:
+```python
+@itemgetter
+@lambda _: 56
+class GetElement56:
+    pass
+
+@attrgetter
+@GetElement56
+@dir
+@lambda _: str
+class GetStrDotJoin:
+    pass
+
+@GetStrDotJoin
+@Slice0
+@str
+class JoinWithoutSeparators:
+    pass
+```
+
