@@ -229,4 +229,4 @@ class GetStrDotJoin:
 class JoinWithoutSeparators:
     pass
 ```
-
+And voila! We can reconnect our lists of characters from earlier, and thus revel in our ability to construct arbitrary strings. Just add up the parts, using `chr` where necessary to nab punctuation, and we're done!
