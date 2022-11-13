@@ -5,7 +5,7 @@ There are lots of punctuation marks that can appear in Python code. Strictly spe
 
 [^1]: I'm well aware of f-strings and its predecessors, but those are once again *syntactic* elements of the language.
 
-Thus, this project considers all *single* punctuation marks that are syntactically valid *outside* of string literals. As of release 3.10[^2][^3], they are
+Thus, this project considers all *single* punctuation marks that are syntactically valid *outside* of string literals. As of release 3.11[^2][^3], they are
 
 `! " # % & ' () * + , - . / : ; < = > @ [] \ ^ {} | ~`
 
