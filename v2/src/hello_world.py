@@ -1,26 +1,16 @@
-from util import attrgetter
-from util import itemgetter
+from build import Concat
+from build import Join
 
-from util import str︳__add__
-from util import str︳join
+from punctuation import Space
+from punctuation import ExclamationMark
 
-
-@itemgetter
-@slice
-@lambda _: 5
-class Slice5:
-    pass
+from slices import Clear
+from slices import Slice5
+from slices import Slice7
 
 
-@itemgetter
-@slice
-@lambda _: 7
-class Slice7:
-    pass
-
-
-@str︳__add__
-@str︳join
+@Concat
+@Join
 @Slice5
 @list
 @reversed
@@ -32,17 +22,8 @@ class Hello:
     pass
 
 
-@str︳__add__
-@Hello
-@chr
-@lambda _: 32
-class Space:
-    pass
-
-
-@str︳__add__
-@Space
-@str︳join
+@Concat
+@Join
 @Slice5
 @list
 @reversed
@@ -55,8 +36,11 @@ class World:
 
 
 @print
+@Hello
+@Space
 @World
-@chr
-@lambda _: 33
-class ExclamationPoint:
+@ExclamationMark
+@Clear
+@str
+class Main:
     pass

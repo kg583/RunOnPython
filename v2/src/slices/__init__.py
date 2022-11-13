@@ -2,600 +2,705 @@ from operator import itemgetter
 
 
 @itemgetter
+@slice
 @lambda _: 0
-class GetItem0:
+class Slice0:
+    pass
+
+
+@lambda _: Slice0
+class Clear:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 1
-class GetItem1:
+class Slice1:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 2
-class GetItem2:
+class Slice2:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 3
-class GetItem3:
+class Slice3:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 4
-class GetItem4:
+class Slice4:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 5
-class GetItem5:
+class Slice5:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 6
-class GetItem6:
+class Slice6:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 7
-class GetItem7:
+class Slice7:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 8
-class GetItem8:
+class Slice8:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 9
-class GetItem9:
+class Slice9:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 10
-class GetItem10:
+class Slice10:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 11
-class GetItem11:
+class Slice11:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 12
-class GetItem12:
+class Slice12:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 13
-class GetItem13:
+class Slice13:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 14
-class GetItem14:
+class Slice14:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 15
-class GetItem15:
+class Slice15:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 16
-class GetItem16:
+class Slice16:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 17
-class GetItem17:
+class Slice17:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 18
-class GetItem18:
+class Slice18:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 19
-class GetItem19:
+class Slice19:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 20
-class GetItem20:
+class Slice20:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 21
-class GetItem21:
+class Slice21:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 22
-class GetItem22:
+class Slice22:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 23
-class GetItem23:
+class Slice23:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 24
-class GetItem24:
+class Slice24:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 25
-class GetItem25:
+class Slice25:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 26
-class GetItem26:
+class Slice26:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 27
-class GetItem27:
+class Slice27:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 28
-class GetItem28:
+class Slice28:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 29
-class GetItem29:
+class Slice29:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 30
-class GetItem30:
+class Slice30:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 31
-class GetItem31:
+class Slice31:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 32
-class GetItem32:
+class Slice32:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 33
-class GetItem33:
+class Slice33:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 34
-class GetItem34:
+class Slice34:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 35
-class GetItem35:
+class Slice35:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 36
-class GetItem36:
+class Slice36:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 37
-class GetItem37:
+class Slice37:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 38
-class GetItem38:
+class Slice38:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 39
-class GetItem39:
+class Slice39:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 40
-class GetItem40:
+class Slice40:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 41
-class GetItem41:
+class Slice41:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 42
-class GetItem42:
+class Slice42:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 43
-class GetItem43:
+class Slice43:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 44
-class GetItem44:
+class Slice44:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 45
-class GetItem45:
+class Slice45:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 46
-class GetItem46:
+class Slice46:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 47
-class GetItem47:
+class Slice47:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 48
-class GetItem48:
+class Slice48:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 49
-class GetItem49:
+class Slice49:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 50
-class GetItem50:
+class Slice50:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 51
-class GetItem51:
+class Slice51:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 52
-class GetItem52:
+class Slice52:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 53
-class GetItem53:
+class Slice53:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 54
-class GetItem54:
+class Slice54:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 55
-class GetItem55:
+class Slice55:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 56
-class GetItem56:
+class Slice56:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 57
-class GetItem57:
+class Slice57:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 58
-class GetItem58:
+class Slice58:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 59
-class GetItem59:
+class Slice59:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 60
-class GetItem60:
+class Slice60:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 61
-class GetItem61:
+class Slice61:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 62
-class GetItem62:
+class Slice62:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 63
-class GetItem63:
+class Slice63:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 64
-class GetItem64:
+class Slice64:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 65
-class GetItem65:
+class Slice65:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 66
-class GetItem66:
+class Slice66:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 67
-class GetItem67:
+class Slice67:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 68
-class GetItem68:
+class Slice68:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 69
-class GetItem69:
+class Slice69:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 70
-class GetItem70:
+class Slice70:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 71
-class GetItem71:
+class Slice71:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 72
-class GetItem72:
+class Slice72:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 73
-class GetItem73:
+class Slice73:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 74
-class GetItem74:
+class Slice74:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 75
-class GetItem75:
+class Slice75:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 76
-class GetItem76:
+class Slice76:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 77
-class GetItem77:
+class Slice77:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 78
-class GetItem78:
+class Slice78:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 79
-class GetItem79:
+class Slice79:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 80
-class GetItem80:
+class Slice80:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 81
-class GetItem81:
+class Slice81:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 82
-class GetItem82:
+class Slice82:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 83
-class GetItem83:
+class Slice83:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 84
-class GetItem84:
+class Slice84:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 85
-class GetItem85:
+class Slice85:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 86
-class GetItem86:
+class Slice86:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 87
-class GetItem87:
+class Slice87:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 88
-class GetItem88:
+class Slice88:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 89
-class GetItem89:
+class Slice89:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 90
-class GetItem90:
+class Slice90:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 91
-class GetItem91:
+class Slice91:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 92
-class GetItem92:
+class Slice92:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 93
-class GetItem93:
+class Slice93:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 94
-class GetItem94:
+class Slice94:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 95
-class GetItem95:
+class Slice95:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 96
-class GetItem96:
+class Slice96:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 97
-class GetItem97:
+class Slice97:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 98
-class GetItem98:
+class Slice98:
     pass
 
 
 @itemgetter
+@slice
 @lambda _: 99
-class GetItem99:
+class Slice99:
     pass

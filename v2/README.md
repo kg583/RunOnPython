@@ -106,10 +106,20 @@ class ThisIsASpace:
     
 assert ThisIsASpace == " "
 ```
+
+In fact, this dastardly device can implement `=` all by itself!
+```python
+@lambda _: OtherThing
+class MyThing:
+    pass
+
+assert MyThing == OtherThing
+```
+
 ### Operator? I Hardly...
 Like a surgeon diving delicately into the intricate innards of their patient, we will endeavor to `slice` out the good parts of our strings from the bad. Indeed, we can accomplish this since `slice` has multiple arities, and in particular
 ```python
-x[:i] == x.__getitem__(slice(None, i, None) == x.__getitem__(slice(i))
+x[:i] == x.__getitem__(slice(None, i, None)) == x.__getitem__(slice(i))
 ```
 
 Thus, we can obtain slices from the left, but what about the `__getitem__` call? Well, this is where the unassuming `operator` module enters the scene, armed with two functions that saved this project before it even began: `attrgetter` and `itemgetter`. These beauties were devised for their utility in calls to `map` and its other functional cousins, and are equivalent to
@@ -121,10 +131,10 @@ Just look at that currying! I claimed before that *most* built-ins do not admit 
 ```python
 @itemgetter
 @lambda _: 0
-class GetTheFirstElement:
+class GetTheFirstItem:
     pass
     
-@GetTheFirstElement
+@GetTheFirstItem
 @str
 class ThisIsALeftAngleBracket:
     pass
@@ -169,12 +179,12 @@ Let's get a hold of `str.__add__` first, since it's pretty easy:
 @iter
 @dir
 @lambda _: str
-class GetStrDotAdd:
+class StrDotAdd:
     pass
 ```
 We use it by attaching it to one string (i.e. decorating the class with the first operand), then calling the attachment on the other. Recall our use of carefully-chosen `slice`s:
 ```python
-@GetStrDotAdd
+@StrDotAdd
 @Slice4
 @list
 @reversed
@@ -213,20 +223,38 @@ Now we need `join` itself, which lives at index 56 inside `dir(str)`:
 ```python
 @itemgetter
 @lambda _: 56
-class GetElement56:
+class GetItem56:
     pass
 
 @attrgetter
-@GetElement56
+@GetItem56
 @dir
 @lambda _: str
-class GetStrDotJoin:
+class StrDotJoin:
     pass
 
-@GetStrDotJoin
+@StrDotJoin
 @Slice0
 @str
-class JoinWithoutSeparators:
+class EmptyDotJoin:
     pass
 ```
 And voila! We can reconnect our lists of characters from earlier, and thus revel in our ability to construct arbitrary strings. Just add up the parts, using `chr` where necessary to nab punctuation, and we're done!
+
+### Putting it all together
+
+ While building code strings is quite the pain, a multitude of modules have been built to make the process much more streamlined, all of which can be found in `v2/src`:
+
+* `build`: your basic string-building operations
+* `itemgetters`: item nabbers from 0 to 99
+* `keywords`: every non-identifier keyword
+* `punctuation`: every ASCII punctuation mark
+* `slices`: slicers from 0 to 99
+
+Take a look at the sample programs to see how to best combine these tools into barely-readable code.
+
+## How Can I Write Run-on Python?
+
+In contrast to `v4`, a transpiler for `v2` code is actually decently doable. Only some very basic components are required in any given program, with the rest easy to generate on-the-fly by simply reading any given program as a string.  Some care would need to be taken for imports, proper namespacing, and generally `exec` tomfoolery, but that can be pushed to the user.
+
+If such a transpiler ever comes to exist, it will appear here. Otherwise, enjoy writing Run-on Python by-hand and utilizing your precious moments on this Earth to create something truly ridiculous.
