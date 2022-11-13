@@ -1,10 +1,10 @@
 from builder import Concat
+from builder import EmptyString
 from builder import Join
 
 from punctuation import Space
 from punctuation import ExclamationMark
 
-from slices import Clear
 from slices import Slice5
 from slices import Slice7
 
@@ -40,7 +40,6 @@ class World:
 @Space
 @World
 @ExclamationMark
-@Clear
-@str
+@lambda _: EmptyString
 class Main:
     pass

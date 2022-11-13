@@ -1,6 +1,6 @@
-from build import Casefold
-from build import Concat
-from build import Join
+from builder import Casefold
+from builder import Concat
+from builder import Join
 
 
 from slices import Slice2

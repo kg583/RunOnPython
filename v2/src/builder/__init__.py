@@ -31,6 +31,12 @@ class Concat:
     pass
 
 
+@Clear
+@str
+class EmptyString:
+    pass
+
+
 @attrgetter
 @GetItem56
 @dir
@@ -40,7 +46,6 @@ class JoinTemplate:
 
 
 @JoinTemplate
-@Clear
-@str
+@lambda _: EmptyString
 class Join:
     pass

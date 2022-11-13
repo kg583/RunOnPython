@@ -1,17 +1,14 @@
 from builder import Casefold
 from builder import Concat
+from builder import EmptyString
 from builder import Join
-
 
 from keywords import From
 from keywords import Import
 
-
 from punctuation import Asterisk
 from punctuation import Space
 
-
-from slices import Clear
 from slices import Slice4
 from slices import Slice6
 
@@ -37,7 +34,6 @@ class Math:
 @Space
 @Import
 @Asterisk
-@Clear
-@str
+@lambda _: EmptyString
 class FromMathImportAll:
     pass
