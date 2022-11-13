@@ -3,6 +3,20 @@ from build import Concat
 
 @Concat
 @chr
+@lambda _: 9
+class Tab:
+    pass
+
+
+@Concat
+@chr
+@lambda _: 10
+class Newline:
+    pass
+
+
+@Concat
+@chr
 @lambda _: 32
 class Space:
     pass
