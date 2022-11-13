@@ -50,3 +50,6 @@ This is just one small example of what Run-on Python is trying to do: let you wr
 Of course, "behave the same way" is a bit subjective sometimes, as one could claim that a Turing machine can "behave" identically to any Python program. You'd be right, but you'd also be very wrong: a Turing machine has no variables, nor classes, nor functions, nor printing to `stdout`. Being able to compute anything is not quite enough.
 
 Basically, one should be able to take any existing Python code, make some (probably several) adjustments, and obtain Run-on Python code (v2 or v4) that does the same thing in the same ways. Capiche? Cool, let's do it.
+
+## Some Other Notes
+This challenge came to me in an afternoon, partly inspired by [pyfuck](https://github.com/wanqizhu/pyfuck). There's no good reason to ever write code this way, but it's kinda funny. Shoutout to @commandblockguy, @iPhoenix, and @LogicalJoe for comments and discussion on this monstrosity as it developed.
