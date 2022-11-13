@@ -245,7 +245,7 @@ And voila! We can reconnect our lists of characters from earlier, and thus revel
 
  While building code strings is quite the pain, a multitude of modules have been built to make the process much more streamlined, all of which can be found in `v2/src`:
 
-* `build`: your basic string-building operations
+* `builder`: your basic string-building operations
 * `itemgetters`: item nabbers from 0 to 99
 * `keywords`: every non-identifier keyword
 * `punctuation`: every ASCII punctuation mark
