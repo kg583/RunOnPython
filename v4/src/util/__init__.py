@@ -42,7 +42,7 @@ def get_value(name):
 
 def set_value(name):
     def inner(value):
-        return getattr(*tup(globals())(next(advance(24)(iter(dir(F))))))(*tup(name)(value))
+        return getattr(*tup(globals())(next(advance(25)(iter(dir(F))))))(*tup(name)(value))
 
     return inner
 
@@ -84,12 +84,24 @@ def build_iterable(t):
     return build_map(t)(lambda i: t(i for _ in O))()()
 
 
-build_list = build_iterable(list)
-build_tuple = build_iterable(tuple)
-build_string = build_map(str)(chr)()()
+def build_list(*_):
+    return build_iterable(list)(*_)
+
+
+def build_tuple(*_):
+    return build_iterable(tuple)(*_)
+
+
+def build_string(*_):
+    return build_map(str)(chr)()()(*_)
+
 
 set_value(chr(68))(build_string(95)(95)())
-build_magic = build_map(str)(chr)(D)(D)
+
+
+def build_magic(*_):
+    return build_map(str)(chr)(D)(D)(*_)
+
 
 set_value(chr(69))(build_magic(101)(113)())
 set_value(chr(77))(build_magic(109)(97)(105)(110)())
