@@ -53,3 +53,7 @@ Basically, one should be able to take any existing Python code, make some (proba
 
 ## Some Other Notes
 This challenge came to me in an afternoon, partly inspired by [pyfuck](https://github.com/wanqizhu/pyfuck). There's no good reason to ever write code this way, but it's kinda funny. Shoutout to @commandblockguy, @iPhoenix, and @LogicalJoe for comments and discussion on this monstrosity as it developed.
+
+I'll update the utilities whenever I feel like it, and thus they may not exactly conform to any details I happen to give in the corresponding READMEs. Let it be an exercise for the coder to deduce exactly what everything is doing.
+
+In particular, if I haven't gotten around to it yet, stuff may be broken because classes contain more magic methods by default than they used to. Adding (or subtracting, if you're downgrading your Python version) one or two to the index being fetched in the attribute fetchers should resolve things.
