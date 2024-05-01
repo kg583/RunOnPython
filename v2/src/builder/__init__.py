@@ -2,14 +2,14 @@ from operator import attrgetter
 from operator import itemgetter
 
 
-from itemgetters import GetItem34
-from itemgetters import GetItem56
+from itemgetters import GetItem35
+from itemgetters import GetItem57
 
 from slices import Clear
 
 
 @attrgetter
-@GetItem34
+@GetItem35
 @dir
 @lambda _: str
 class CasefoldTemplate:
@@ -38,7 +38,7 @@ class EmptyString:
 
 
 @attrgetter
-@GetItem56
+@GetItem57
 @dir
 @lambda _: str
 class JoinTemplate:
