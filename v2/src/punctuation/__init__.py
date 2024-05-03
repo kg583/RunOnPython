@@ -1,4 +1,13 @@
-from builder import Concat
+from operator import attrgetter
+
+
+@attrgetter
+@next
+@iter
+@dir
+@lambda _: str
+class Concat:
+    pass
 
 
 @Concat
@@ -201,6 +210,13 @@ class RightBracket:
 @chr
 @lambda _: 94
 class Caret:
+    pass
+
+
+@Concat
+@chr
+@lambda _: 95
+class Underscore:
     pass
 
 

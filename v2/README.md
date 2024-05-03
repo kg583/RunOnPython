@@ -209,7 +209,7 @@ class Right:
 assert Right == "LeftRight"
 ```
 
-### Joining The Cause
+### Joining the Cause
 
 Our good friend `str.join` is a bit stranger; we need to first bind it to the empty string so we can join up our lists of characters with no separators. We'll get a hold of the empty string using another clever slice:
 ```python
@@ -241,17 +241,83 @@ class EmptyDotJoin:
 ```
 And voila! We can reconnect our lists of characters from earlier, and thus revel in our ability to construct arbitrary strings. Just add up the parts, using `chr` where necessary to nab punctuation, and we're done!
 
-### Putting it all together
+### We Need To Go Deeper
 
- While building code strings is quite the pain, a multitude of modules have been built to make the process much more streamlined, all of which can be found in `v2/src`:
+Armed with crude but arbitrary string execution, we can bootstrap our way to more powerful constructs. Each of these steps is executed for-realsies in `v2/src/util`, wherein you can import any you like to build your barely-readable code. And while I may have a penchant for the simplistic model of decorator chaining == string concatenation, any substantial code simply deserves better.
 
-* `builder`: your basic string-building operations
-* `itemgetters`: item nabbers from 0 to 99
-* `keywords`: every non-identifier keyword
-* `punctuation`: every ASCII punctuation mark
-* `slices`: slicers from 0 to 99
+First, we'll pick up some methods to turn hex strings into not-hex strings:
+```python
+@attrgetter
+@GetItem43
+@dir
+@lambda _: bytes
+class _FromHex:
+    pass
 
-Take a look at the sample programs to see how to best combine these tools into barely-readable code.
+@_FromHex
+@lambda _: bytes
+class FromHex:
+    pass
+
+@attrgetter
+@GetItem39
+@dir
+@lambda _: bytes
+class _Decode:
+    pass
+
+@_Decode
+@lambda _: bytes
+class Decode:
+    pass
+```
+
+Next, we'll make a helper function to evaluate a hex string derived from an integer literal (in hex, so it at least _might_ fit on the screen). This helper, naturally, calls what will become itself on itself:
+```python
+@iter
+@hex
+@lambda _: 0x6c616d626461205f3a6576616c2862797465732e66726f6d6865782866227b5f3a787d22292e6465636f6465282929
+class _EvalHex:
+    pass
+
+@eval
+@Decode
+@FromHex
+@Join
+@list
+@lambda _: _EvalHex
+@next
+@lambda _: _EvalHex
+@next
+@lambda _: _EvalHex
+class EvalHex:
+    pass
+```
+
+The assembly is subtle: we use `next` twice to skip the leading `0x` from `hex()`, then consume the rest of the iterator into a `list`, as `str(iter(foo))` is the string representation of `iter(foo)` (which isn't very useful).
+
+Now we can `EvalHex` whatever we'd like to execute worse and worse code. While we'd like to avoid using it too much, lest our programs become truly unreadable, but it does make our next trick much easier: matrix multiplication.
+
+### Seriously, Why Is This Here?
+
+In the distant past of 2014, [it was decided](https://peps.python.org/pep-0465/) that Python should have a matrix multiplication operator. In a stroke a punning, its symbol is `@`, which proves unreasonably convenient for the task at hand. By defining classes which implement `__matmul__`, we can perform _binary_ operations without any extra punctuation _or_ resorting to hex strings!
+
+The general approach will be to use `@lambda _:` decorators, as they can have arbitrary expressions as bodies. We'll start each expression with the class whose operator we'd like to use, followed by a list of `@` operations. The class will collect the results of the operations, reducing left-associatively so that the `__matmul__` calls always succeed. For example, the `Args` class collects each subsequent element into a list:
+```python
+@lambda _: Args @ 1 @ 2 @ 3
+class Example:
+    pass
+```
+
+If we call `Example` on an argument, it will splat those elements into a function call of that argument:
+```python
+@Example
+@lambda _: print
+class Function:
+    pass
+```
+
+The `util` package contains many more fantastic Matthew Mullers; their exact usage and syntax is left as an exercise to the programmer. You can also find other shortcuts like `GetName`, which takes the headache out of reverse-slicing your way to the name of a class. All of this amounts to a surprising breadth of possible paradigms for writing Run-on Python, so please do run and explore with wild abandon.
 
 ## How Can I Write Run-on Python?
 

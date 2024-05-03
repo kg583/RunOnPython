@@ -1,28 +1,18 @@
-from builder import Casefold
-from builder import Concat
-from builder import EmptyString
-from builder import Join
-
 from keywords import From
 from keywords import Import
 
 from punctuation import Asterisk
 from punctuation import Space
 
-from slices import Slice4
-from slices import Slice6
+from util import Casefold
+from util import Concat
+from util import EmptyString
+from util import GetName
 
 
 @Concat
 @Casefold
-@Join
-@Slice4
-@list
-@reversed
-@Slice6
-@list
-@reversed
-@str
+@GetName
 class Math:
     pass
 

@@ -1,462 +1,201 @@
-from builder import Casefold
-from builder import Concat
-from builder import Join
+from operator import itemgetter
+
+from util import Args
+from util import Call
+from util import Casefold
+from util import Compose
+from util import Concat
+from util import GetName
+from util import _1
 
 
-from slices import Slice2
-from slices import Slice3
-from slices import Slice4
-from slices import Slice5
-from slices import Slice6
-from slices import Slice7
-from slices import Slice8
-from slices import Slice9
-from slices import Slice10
+@lambda _: Compose @ GetName @ Casefold @ Concat
+class _GetName:
+    pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice3
-@list
-@reversed
-@Slice5
-@list
-@reversed
-@str
+@_GetName
 class And:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice2
-@list
-@reversed
-@Slice4
-@list
-@reversed
-@str
+@_GetName
 class As:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice6
-@list
-@reversed
-@Slice8
-@list
-@reversed
-@str
+@_GetName
 class Assert:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice5
-@list
-@reversed
-@Slice7
-@list
-@reversed
-@str
+@_GetName
 class Async:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice5
-@list
-@reversed
-@Slice7
-@list
-@reversed
-@str
+@_GetName
 class Await:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice5
-@list
-@reversed
-@Slice7
-@list
-@reversed
-@str
+@_GetName
 class Break:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice5
-@list
-@reversed
-@Slice7
-@list
-@reversed
-@str
+@_GetName
 class Class:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice8
-@list
-@reversed
-@Slice10
-@list
-@reversed
-@str
+@_GetName
 class Continue:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice3
-@list
-@reversed
-@Slice5
-@list
-@reversed
-@str
+@_GetName
 class Def:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice3
-@list
-@reversed
-@Slice5
-@list
-@reversed
-@str
+@_GetName
 class Del:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice4
-@list
-@reversed
-@Slice6
-@list
-@reversed
-@str
+@_GetName
 class Elif:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice4
-@list
-@reversed
-@Slice6
-@list
-@reversed
-@str
+@_GetName
 class Else:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice6
-@list
-@reversed
-@Slice8
-@list
-@reversed
-@str
+@_GetName
 class Except:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice7
-@list
-@reversed
-@Slice9
-@list
-@reversed
-@str
+@_GetName
 class Finally:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice3
-@list
-@reversed
-@Slice5
-@list
-@reversed
-@str
+@_GetName
 class For:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice4
-@list
-@reversed
-@Slice6
-@list
-@reversed
-@str
+@_GetName
 class From:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice6
-@list
-@reversed
-@Slice8
-@list
-@reversed
-@str
+@_GetName
 class Global:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice2
-@list
-@reversed
-@Slice4
-@list
-@reversed
-@str
+@_GetName
 class If:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice6
-@list
-@reversed
-@Slice8
-@list
-@reversed
-@str
+@_GetName
 class Import:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice2
-@list
-@reversed
-@Slice4
-@list
-@reversed
-@str
+@_GetName
 class In:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice2
-@list
-@reversed
-@Slice4
-@list
-@reversed
-@str
+@_GetName
 class Is:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice6
-@list
-@reversed
-@Slice8
-@list
-@reversed
-@str
+@_GetName
 class Lambda:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice8
-@list
-@reversed
-@Slice10
-@list
-@reversed
-@str
+@_GetName
 class Nonlocal:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice3
-@list
-@reversed
-@Slice5
-@list
-@reversed
-@str
+@_GetName
 class Not:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice2
-@list
-@reversed
-@Slice4
-@list
-@reversed
-@str
+@_GetName
 class Or:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice4
-@list
-@reversed
-@Slice6
-@list
-@reversed
-@str
+@_GetName
 class Pass:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice5
-@list
-@reversed
-@Slice7
-@list
-@reversed
-@str
+@_GetName
 class Raise:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice6
-@list
-@reversed
-@Slice8
-@list
-@reversed
-@str
+@_GetName
 class Return:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice3
-@list
-@reversed
-@Slice5
-@list
-@reversed
-@str
+@_GetName
 class Try:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice5
-@list
-@reversed
-@Slice7
-@list
-@reversed
-@str
+@_GetName
 class While:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice4
-@list
-@reversed
-@Slice6
-@list
-@reversed
-@str
+@_GetName
 class With:
     pass
 
 
-@Concat
-@Casefold
-@Join
-@Slice5
-@list
-@reversed
-@Slice7
-@list
-@reversed
-@str
+@_GetName
 class Yield:
+    pass
+
+
+@itemgetter
+@slice
+@lambda _: _1
+class _Trim:
+    pass
+
+
+@lambda _: Compose @ GetName @ _Trim @ Concat
+class _GetSingleton:
+    pass
+
+
+@_GetSingleton
+class False_:
+    pass
+
+
+@_GetSingleton
+class None_:
+    pass
+
+
+@_GetSingleton
+class True_:
     pass
